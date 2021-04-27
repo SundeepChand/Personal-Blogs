@@ -1,0 +1,19 @@
+@import '../variables/font.scss';
+
+.container {
+  width: 100%;
+}
+
+.heroImage {
+  position: relative;
+  height: 450px;
+  width: 100vw;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.caption {
+  width: 100%;
+  font-size: $font-small;
+  text-align: center;
+}

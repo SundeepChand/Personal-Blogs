@@ -9,7 +9,7 @@
   @extend %flex-space-between;
   @extend %flex-nowrap;
   width: 100%;
-  height: $navbar-height;
+  height: $navbar-height-default;
   background-color: $primary;
   padding: 0 $padding-default;
   box-shadow: 0 2px 10px 1px $primary-shadow-color;
@@ -27,7 +27,7 @@
   @extend %flex;
   @extend %flex-centered;
   width: 8%;
-  max-width: $navbar-height;
+  max-width: $navbar-height-default;
   height: 100%;
 
   &:hover {
@@ -37,7 +37,7 @@
 
 .btnNav {
   @extend %flex;
-  height: $navbar-height;
+  height: $navbar-height-default;
   padding: $padding-default;
   margin: 0;
   font-size: $font-default;
@@ -51,5 +51,17 @@
   &:hover {
     font-size: $font-default + 1;
     cursor: pointer;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .container, .btnNav {
+    height: $navbar-height-small;
+  }
+  .btnNav {
+    padding: 0;
+  }
+  .logo {
+    max-width: $navbar-height-small;
   }
 }
