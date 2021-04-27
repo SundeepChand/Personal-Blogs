@@ -1,9 +1,14 @@
+import Head from "next/head";
 import Layout from "../../components/Layout";
 import Header from "../../components/Header";
 
 export default function About() {
   return (
     <Layout>
+      <Head>
+        <title>About Me</title>
+      </Head>
+
       <Header imgSrc="/images/hero-about.jpg">
         Photo by{" "}
         <a
