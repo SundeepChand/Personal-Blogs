@@ -1,8 +1,8 @@
-@import '../variables/colors.scss';
-@import '../variables/spacing.scss';
-@import '../variables/font.scss';
-@import '../variables/sizes.scss';
-@import '../placeholders/layout.scss';
+@import "../variables/colors.scss";
+@import "../variables/spacing.scss";
+@import "../variables/font.scss";
+@import "../variables/sizes.scss";
+@import "../placeholders/layout.scss";
 
 .container {
   @extend %flex;
@@ -12,7 +12,7 @@
   height: $navbar-height-default;
   background-color: $primary;
   padding: 0 $padding-default;
-  box-shadow: 0 2px 10px 1px $primary-shadow-color;
+  box-shadow: 0 2px 15px 1px $navbar-shadow-color;
 }
 
 .navmenu {
@@ -55,7 +55,8 @@
 }
 
 @media only screen and (max-width: 768px) {
-  .container, .btnNav {
+  .container,
+  .btnNav {
     height: $navbar-height-small;
   }
   .btnNav {
