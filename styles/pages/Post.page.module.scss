@@ -1,0 +1,39 @@
+@import "../placeholders/layout.scss";
+@import "../variables/colors.scss";
+@import "../variables/font.scss";
+
+.container {
+  width: 70%;
+  max-width: 768px;
+  min-width: 320px;
+  margin: auto;
+  text-align: center;
+  padding: 5px;
+  padding-top: 20px;
+}
+
+.meta {
+  @extend %flex;
+  @extend %flex-centered;
+  padding-top: 5px;
+  padding-bottom: 14px;
+  color: $light-gray;
+  font-size: $font-smaller;
+}
+
+.separator {
+  margin: 0 10px;
+}
+
+.content {
+  text-align: justify;
+}
+.content > p {
+  margin: 18px 0;
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 100%;
+  }
+}
