@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { format } from "date-fns";
+import Button from "./Button";
 import styles from "../styles/components/Post.module.scss";
 
 export default function Post({ post }) {
@@ -25,12 +27,19 @@ export default function Post({ post }) {
         </div>
         <p className={styles.postDescription}>{slice(post.description)}</p>
       </div>
+      <div className={styles.buttonDiv}>
+        <Link href="/">
+          <a>
+            <Button>Read More ➞</Button>
+          </a>
+        </Link>
+      </div>
     </div>
   );
 }
 
-const slice = (text, length = 130) => {
-  // Function to slice the passed text to a certaine length
+const slice = (text, length = 60) => {
+  // Function to slice the passed text to a certain length
   if (text.length <= length) return text;
   return text.slice(0, length) + "...";
 };

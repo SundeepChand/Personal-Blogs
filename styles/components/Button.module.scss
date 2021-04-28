@@ -1,0 +1,20 @@
+@import "../variables/colors.scss";
+@import "../variables/font.scss";
+
+.container {
+  width: 100px;
+  height: 30px;
+  padding: 2px;
+  color: $white;
+  background-color: $primary;
+  border-radius: 3px;
+  box-shadow: 0px 0px 4px 0px $button-shadow-color;
+  outline: none;
+  border: none;
+  margin: 0;
+
+  &:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+}
