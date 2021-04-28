@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import styles from '../styles/components/Navbar.module.scss'
+import Link from "next/link";
+import styles from "../styles/components/Navbar.module.scss";
 
 export default function Navbar() {
   return (
     <nav className={styles.container}>
-      <Link href='/'>
+      <Link href="/">
         <div className={styles.logo}>
           <h1>Blogs</h1>
         </div>
@@ -16,12 +16,14 @@ export default function Navbar() {
             <a>Search</a>
           </div>
         */}
-        <Link href='/about'>
+        <Link href="/about">
           <div className={styles.btnNav}>
-            <a>About Me</a>
+            <a>
+              <p>About Me</p>
+            </a>
           </div>
         </Link>
       </div>
     </nav>
-  )
+  );
 }

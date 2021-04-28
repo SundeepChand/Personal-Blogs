@@ -19,8 +19,7 @@
   @extend %flex;
   @extend %flex-nowrap;
   @extend %flex-space-around;
-  width: 60%;
-  max-width: 200px;
+  max-width: 400px;
 }
 
 .logo {
@@ -37,6 +36,8 @@
 
 .btnNav {
   @extend %flex;
+  text-align: center;
+  width: 160px;
   height: $navbar-height-default;
   padding: $padding-default;
   margin: 0;
@@ -45,6 +46,7 @@
   transition: 0.2s ease-in;
 
   & a {
+    width: 100%;
     color: inherit;
     text-decoration: none;
   }
@@ -59,7 +61,11 @@
   .btnNav {
     height: $navbar-height-small;
   }
+  .container {
+    padding: 0 $padding-small;
+  }
   .btnNav {
+    width: 100px;
     padding: 0;
   }
   .logo {
