@@ -5,6 +5,8 @@ import ProfileImage from "../../components/ProfileImage";
 import AboutInfo from "../../components/AboutInfo";
 import { getAboutData } from "../../lib/about";
 
+const mainStyle = { top: "-140px", position: "relative" };
+
 export default function About({ data }) {
   return (
     <Layout>
@@ -13,7 +15,7 @@ export default function About({ data }) {
       </Head>
 
       <Header imgSrc="/images/hero-about.jpg"></Header>
-      <main>
+      <main style={mainStyle}>
         <ProfileImage image={data.ProfileImage} />
 
         <AboutInfo user={data} />
