@@ -1,0 +1,53 @@
+@import "../placeholders/layout.scss";
+@import "../variables/font.scss";
+@import "../variables/colors.scss";
+@import "../variables/spacing.scss";
+
+.container {
+  width: 30%;
+  min-width: 280px;
+  max-width: 320px;
+  height: 320px;
+  box-shadow: 0px 0px 5px 0px $soft-shadow-color;
+  padding: 0;
+  margin: 15px;
+  overflow: hidden;
+  border-radius: 2%;
+  @extend %flex;
+  @extend %flex-space-between;
+}
+
+.imageContainer {
+  position: relative;
+  top: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 60%;
+}
+
+.content {
+  padding: $padding-post-card;
+  width: 100%;
+}
+
+.title {
+  font-size: $font-default;
+  font-weight: $font-darker;
+}
+
+.meta {
+  @extend %flex;
+  @extend %flex-space-between;
+  padding-top: 5px;
+  padding-bottom: 14px;
+  color: $light-gray;
+  font-size: $font-smaller;
+}
+
+.authorName {
+  width: 60%;
+}
+
+.postDescription {
+  font-size: $font-smaller;
+}

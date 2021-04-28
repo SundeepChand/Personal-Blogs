@@ -1,0 +1,18 @@
+@import "../placeholders/layout.scss";
+
+.container {
+  @extend %flex;
+  @extend %flex-space-around;
+  padding: 35px 20px;
+}
+
+.title {
+  @extend %flex;
+  @extend %flex-centered;
+  width: 100%;
+}
+
+.content {
+  @extend %flex;
+  @extend %flex-centered;
+}
