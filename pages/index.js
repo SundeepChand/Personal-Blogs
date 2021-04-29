@@ -10,7 +10,7 @@ export default function Home({ posts }) {
       <Head>
         <title>Home</title>
       </Head>
-      <Header imgSrc="/images/hero-home.jpg">
+      <Header imgSrc="/images/hero-home.jpg" alt={"Blocks"}>
         Photo by{" "}
         <a
           href="https://unsplash.com/@bertsz?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"

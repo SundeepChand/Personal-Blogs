@@ -1,22 +1,20 @@
-import Image from 'next/image'
-import styles from '../styles/components/Header.module.scss'
+import Image from "next/image";
+import styles from "../styles/components/Header.module.scss";
 
-export default function Header({ children, imgSrc }) {
+export default function Header({ children, imgSrc, alt }) {
   return (
     <header className={styles.container}>
       <div className={styles.heroImage}>
         <Image
           src={imgSrc}
-          alt='Plasma'
-          layout='fill'
-          objectFit='cover'
-          objectPosition='center'
+          alt={alt}
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
         />
       </div>
 
-      <div className={styles.caption}>
-        {children}
-      </div>
+      <div className={styles.caption}>{children}</div>
     </header>
-  )
+  );
 }

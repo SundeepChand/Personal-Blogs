@@ -14,7 +14,7 @@ export default function About({ data }) {
         <title>About Me</title>
       </Head>
 
-      <Header imgSrc="/images/hero-about.jpg"></Header>
+      <Header imgSrc="/images/hero-about.jpg" alt="Plasma bulb" />
       <main style={mainStyle}>
         <ProfileImage image={data.ProfileImage} />
 

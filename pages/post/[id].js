@@ -1,10 +1,10 @@
 import Head from "next/head";
-import Image from "next/image";
 import remark from "remark";
 import html from "remark-html";
 import { format } from "date-fns";
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
+import LikeButton from "../../components/LikeButton";
 import { getAllPostIds, getPostById } from "../../lib/posts";
 import styles from "../../styles/pages/Post.page.module.scss";
 
@@ -16,29 +16,44 @@ export default function Post({ post }) {
       </Head>
 
       <div className={styles.container}>
-        <div>
-          <h1>{post.title}</h1>
-          <div className={styles.meta}>
-            <p>By {post.author.name}</p>
-            <p className={styles.separator}>{" ✨ "}</p>
-            <p>{format(new Date(post.updatedAt), "dd MMM yyyy")}</p>
-          </div>
-        </div>
-        {post.image && (
+        <div className={styles.likes}>
           <div>
-            <Header imgSrc={post.image.url} />
+            <LikeButton postId={post.id} likes={post.likeCount} />
           </div>
-        )}
-        <div className={styles.meta}>
-          <p className={styles.authorName}></p>
-          <div></div>
+          <div>
+            <h1>Co</h1>
+          </div>
         </div>
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{
-            __html: post.content,
-          }}
-        ></div>
+
+        <div className={styles.contentContainer}>
+          <div>
+            <div>
+              <h1>{post.title}</h1>
+              <div className={styles.meta}>
+                <p>By {post.author.name}</p>
+                <p className={styles.separator}>{" ✨ "}</p>
+                <p>{format(new Date(post.updatedAt), "dd MMM yyyy")}</p>
+              </div>
+            </div>
+            {post.image && (
+              <div>
+                <Header imgSrc={post.image.url}>
+                  {post.headerImageCaption}
+                </Header>
+              </div>
+            )}
+            <div className={styles.meta}>
+              <p className={styles.authorName}></p>
+              <div></div>
+            </div>
+            <div
+              className={styles.content}
+              dangerouslySetInnerHTML={{
+                __html: post.content,
+              }}
+            ></div>
+          </div>
+        </div>
       </div>
     </Layout>
   );
