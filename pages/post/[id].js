@@ -11,9 +11,9 @@ import styles from "../../styles/pages/Post.page.module.scss";
 
 export default function Post({ post }) {
   return (
-    <Layout>
+    <Layout postPage>
       <Head>
-        <title>Posts</title>
+        <title>{post.title} | Sundeep's blogs</title>
       </Head>
 
       <div className={styles.container}>

@@ -1,10 +1,11 @@
 import Head from "next/head";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 import styles from "../styles/components/Layout.module.scss";
 
 const siteTitle = `Sundeep's Blogs`;
 
-export default function Layout({ children }) {
+export default function Layout({ children, postPage }) {
   return (
     <div className={styles.container}>
       <Head>
@@ -26,7 +27,8 @@ export default function Layout({ children }) {
       <Navbar />
       {children}
 
-      <div className={styles.buffer}></div>
+      <Footer />
+      {postPage && <div className={styles.buffer}></div>}
     </div>
   );
 }

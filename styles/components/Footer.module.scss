@@ -1,0 +1,20 @@
+@import "../variables/colors.scss";
+@import "../variables/sizes.scss";
+@import "../variables/font.scss";
+@import "../placeholders/layout.scss";
+
+.container {
+  @extend %flex;
+  @extend %flex-centered;
+  width: 100%;
+  background: $primary-gradient;
+  height: $navbar-height-default;
+  color: $orangish-white;
+  font-size: $font-small;
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    height: $navbar-height-small;
+  }
+}

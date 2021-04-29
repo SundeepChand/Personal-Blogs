@@ -10,7 +10,8 @@
   @extend %flex-nowrap;
   width: 100%;
   height: $navbar-height-default;
-  background-color: $primary;
+  background: $primary-gradient;
+  color: $primary-text;
   padding: 0 $padding-default;
   box-shadow: 0 2px 15px 1px $navbar-shadow-color;
 }
