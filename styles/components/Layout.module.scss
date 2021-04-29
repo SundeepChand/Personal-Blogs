@@ -1,0 +1,12 @@
+@import "../variables/sizes.scss";
+
+.buffer {
+  // The extra space to accomodate the bottom bar on mobile devices
+  height: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  .buffer {
+    height: $mobile-bottom-bar-height;
+  }
+}

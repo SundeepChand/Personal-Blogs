@@ -1,6 +1,7 @@
 @import "../placeholders/layout.scss";
 @import "../variables/colors.scss";
 @import "../variables/font.scss";
+@import "../variables/sizes.scss";
 
 .container {
   @extend %flex;
@@ -37,7 +38,7 @@
   margin: 18px 0;
 }
 
-.likes {
+.likesContainer {
   position: -webkit-sticky;
   position: sticky;
   width: 60px;
@@ -49,19 +50,27 @@
   @extend %flex-centered;
 }
 
+.commentIcon {
+  padding-top: 30px;
+}
+
 @media only screen and (max-width: 768px) {
   .contentContainer {
     width: 100%;
     padding: 25px 15px;
   }
-  .likes {
+  .likesContainer {
     flex-direction: row;
     justify-content: space-around;
     background-color: $orangish-white;
     position: fixed;
     width: 100%;
-    height: 50px;
+    height: $mobile-bottom-bar-height;
     top: unset;
     bottom: 0;
+    padding: 8px 0;
+  }
+  .commentIcon {
+    padding-top: 0;
   }
 }

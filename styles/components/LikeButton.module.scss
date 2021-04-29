@@ -22,6 +22,7 @@
   @extend %flex-centered;
   @extend %flex-nowrap;
   font-size: $font-default;
+  font-weight: $font-dark;
 }
 
 .heartUnchecked {

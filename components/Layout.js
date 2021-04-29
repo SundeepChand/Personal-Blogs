@@ -1,10 +1,10 @@
-import Head from 'next/head'
-import Navbar from './Navbar'
-import styles from '../styles/components/Layout.module.scss'
+import Head from "next/head";
+import Navbar from "./Navbar";
+import styles from "../styles/components/Layout.module.scss";
 
-const siteTitle = `Sundeep's Blogs`
+const siteTitle = `Sundeep's Blogs`;
 
-export default function Layout({children}) {
+export default function Layout({ children }) {
   return (
     <div className={styles.container}>
       <Head>
@@ -25,6 +25,8 @@ export default function Layout({children}) {
 
       <Navbar />
       {children}
+
+      <div className={styles.buffer}></div>
     </div>
-  )
+  );
 }

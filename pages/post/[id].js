@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
 import LikeButton from "../../components/LikeButton";
+import CommentsIcon from "../../assets/icons/Comment.svg";
 import { getAllPostIds, getPostById } from "../../lib/posts";
 import styles from "../../styles/pages/Post.page.module.scss";
 
@@ -16,12 +17,12 @@ export default function Post({ post }) {
       </Head>
 
       <div className={styles.container}>
-        <div className={styles.likes}>
+        <div className={styles.likesContainer}>
           <div>
             <LikeButton postId={post.id} likes={post.likeCount} />
           </div>
-          <div>
-            <h1>Co</h1>
+          <div className={styles.commentIcon}>
+            <CommentsIcon width={40} height={35} />
           </div>
         </div>
 
