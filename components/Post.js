@@ -8,9 +8,17 @@ export default function Post({ post }) {
   return (
     <div className={styles.container}>
       <div className={styles.imageContainer}>
-        {post.image && (
+        {!post.headerImageUrl && post.headerImage && (
           <Image
-            src={post.image.url}
+            src={post.headerImage.url}
+            layout="fill"
+            objectFit="cover"
+            objectPosition="center"
+          />
+        )}
+        {post.headerImageUrl && (
+          <Image
+            src={post.headerImageUrl}
             layout="fill"
             objectFit="cover"
             objectPosition="center"
