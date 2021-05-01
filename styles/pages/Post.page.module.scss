@@ -53,10 +53,12 @@
 .likeButton {
   @extend %flex;
   @extend %flex-centered;
-  @extend %flex-nowrap;
+  width: 50%;
 }
 
 .commentIcon {
+  @extend %flex;
+  @extend %flex-centered;
   padding-top: 30px;
   width: 50%;
 }
@@ -68,6 +70,7 @@
   }
   .likesContainer {
     flex-direction: row;
+    flex-wrap: nowrap;
     justify-content: space-around;
     background-color: $orangish-white;
     position: fixed;
