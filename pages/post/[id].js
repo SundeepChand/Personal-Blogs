@@ -38,7 +38,10 @@ export default function Post({ post }) {
             </div>
             {(post.headerImage || post.headerImageUrl) && (
               <div>
-                <Header imgSrc={post.headerImage?.url ?? post.headerImageUrl}>
+                <Header
+                  imgSrc={post.headerImage?.url ?? post.headerImageUrl}
+                  alt={post.headerImageCaption}
+                >
                   {post.headerImageCaption}
                 </Header>
               </div>

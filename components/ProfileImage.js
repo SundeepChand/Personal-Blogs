@@ -1,7 +1,7 @@
 import Image from "next/image";
 import styles from "../styles/components/ProfileImage.module.scss";
 
-export default function ProfileImage({ image }) {
+export default function ProfileImage({ image, alt }) {
   return (
     <div className={styles.container}>
       <Image
@@ -9,7 +9,7 @@ export default function ProfileImage({ image }) {
         width={200}
         height={200}
         src={image.url}
-        alt="Profile Picture"
+        alt={alt}
       />
     </div>
   );
