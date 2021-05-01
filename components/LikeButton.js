@@ -4,6 +4,7 @@ import HeartUnchecked from "../assets/icons/Heart_unchecked.svg";
 import HeartChecked from "../assets/icons/Heart_checked.svg";
 import styles from "../styles/components/LikeButton.module.scss";
 
+let cancelToken = null;
 export default function LikeButton({ postId, likes, id }) {
   const [updatedLikes, setLikes] = useState(null);
 
@@ -39,9 +40,63 @@ export default function LikeButton({ postId, likes, id }) {
     fetchLikes();
   }, []);
 
-  const toggleLikes = () => {
+  const toggleLikes = async () => {
+    if (cancelToken) {
+      cancelToken.cancel("Operation cancelled");
+    }
+    let delta = 0;
+    const prevState = {
+      updatedLikes,
+      liked,
+    };
+    if (liked) {
+      setLikes(updatedLikes - 1);
+      delta = -1;
+    } else {
+      setLikes(updatedLikes + 1);
+      delta = 1;
+    }
     setLiked(!liked);
-    window.localStorage.setItem(postId, JSON.stringify({ liked: !liked }));
+    cancelToken = axios.CancelToken.source();
+    try {
+      const response = await axios.post(
+        `https://sundeep-blogs.herokuapp.com/graphql`,
+        {
+          query: `mutation {
+            updateArticle(input: {
+              where: {
+                id: "${id}"
+              },
+              data: {
+                likes: ${updatedLikes + delta}
+              }
+            }) {
+              article {
+                id
+                likes
+              }
+            }
+          }`,
+        },
+        {
+          cancelToken: cancelToken.token,
+        }
+      );
+      if (response.data.errors) {
+        throw error;
+      }
+      window.localStorage.setItem(postId, JSON.stringify({ liked: !liked }));
+    } catch (error) {
+      // Rollback
+      console.log("Unable to update likes");
+      setLikes(prevState.updatedLikes);
+      setLiked(prevState.liked);
+      window.localStorage.setItem(
+        postId,
+        JSON.stringify({ liked: prevState.liked })
+      );
+      cancelToken = null;
+    }
   };
 
   return (
