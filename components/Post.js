@@ -31,7 +31,7 @@ export default function Post({ post }) {
           <p className={styles.authorName}>By {post.author.name}</p>
           <div>
             <p className={styles.date}>
-              {format(new Date(post.updatedAt), "dd MMM yyyy")}
+              {format(new Date(post.createdAt), "dd MMM yyyy")}
             </p>
           </div>
         </div>

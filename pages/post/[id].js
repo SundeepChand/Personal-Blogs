@@ -19,7 +19,7 @@ export default function Post({ post }) {
       <div className={styles.container}>
         <div className={styles.likesContainer}>
           <div>
-            <LikeButton postId={post.id} likes={post.likeCount} />
+            <LikeButton postId={post.id} likes={post.likes} />
           </div>
           <div className={styles.commentIcon}>
             <CommentsIcon width={40} height={35} />
@@ -33,12 +33,12 @@ export default function Post({ post }) {
               <div className={styles.meta}>
                 <p>By {post.author.name}</p>
                 <p className={styles.separator}>{" ✨ "}</p>
-                <p>{format(new Date(post.updatedAt), "dd MMM yyyy")}</p>
+                <p>{format(new Date(post.createdAt), "dd MMM yyyy")}</p>
               </div>
             </div>
-            {post.image && (
+            {(post.headerImage || post.headerImageUrl) && (
               <div>
-                <Header imgSrc={post.image.url}>
+                <Header imgSrc={post.headerImage?.url ?? post.headerImageUrl}>
                   {post.headerImageCaption}
                 </Header>
               </div>
@@ -76,11 +76,11 @@ async function markdownToHtml(markdown) {
 
 export async function getStaticProps({ params }) {
   // Fetch the individual blog post.
-  const postData = await getPostById(params.id);
-  postData.content = await markdownToHtml(postData.content);
+  const post = await getPostById(params.id);
+  post.content = await markdownToHtml(post.content);
   return {
     props: {
-      post: postData,
+      post: post,
     },
   };
 }
