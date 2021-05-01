@@ -18,8 +18,8 @@ export default function Post({ post }) {
 
       <div className={styles.container}>
         <div className={styles.likesContainer}>
-          <div>
-            <LikeButton postId={post.id} likes={post.likes} />
+          <div className={styles.likeButton}>
+            <LikeButton postId={post.id} likes={post.likes} id={post.id} />
           </div>
           <div className={styles.commentIcon}>
             <CommentsIcon width={40} height={35} />
