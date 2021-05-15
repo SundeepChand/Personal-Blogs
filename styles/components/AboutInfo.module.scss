@@ -20,7 +20,9 @@
   background-color: white;
   margin: auto;
   padding: 0 10px;
+  font-family: "Staatliches", cursive;
   font-size: $font-title;
+  font-weight: $font-dark;
 }
 
 .description {
@@ -28,6 +30,8 @@
   min-width: 320px;
   max-width: 800px;
   text-align: justify;
+  font-family: "Newsreader", serif;
+  line-height: 26px;
   font-size: $font-default;
   border: 1px solid gray;
   padding: 20px;
