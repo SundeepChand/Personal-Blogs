@@ -8,6 +8,7 @@
   @extend %flex-nowrap;
   justify-content: center;
   align-items: flex-start;
+  font-family: "Newsreader", serif;
 }
 
 .contentContainer {
@@ -22,6 +23,13 @@
   margin-top: 60px;
   margin-bottom: 30px;
   box-shadow: 0 -1px 2px 1px $soft-shadow-color;
+  backdrop-filter: blur(3px);
+}
+
+.title {
+  font-family: "Staatliches", cursive;
+  font-size: $font-title;
+  font-weight: $font-dark;
 }
 
 .meta {
@@ -30,7 +38,7 @@
   padding-top: 5px;
   padding-bottom: 14px;
   color: $dark-gray;
-  font-size: $font-smaller;
+  font-size: $font-default;
 }
 
 .separator {
@@ -39,6 +47,8 @@
 
 .content {
   text-align: justify;
+  font-size: $font-default;
+  line-height: 26px;
 }
 .content > p {
   margin: 18px 0;
@@ -55,6 +65,7 @@
   z-index: 3;
   @extend %flex;
   @extend %flex-centered;
+  font-family: "Montserrat", sans-serif;
 }
 
 .likeButton {

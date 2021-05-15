@@ -25,18 +25,20 @@ export default function Post({ post }) {
           <div className={styles.likeButton}>
             <LikeButton postId={post.id} likes={post.likes} id={post.id} />
           </div>
+          {/*
           <div className={styles.commentIcon}>
             <CommentsSection />
           </div>
+          */}
         </div>
 
         <div className={styles.contentContainer}>
           <div>
             <div>
-              <h1>{post.title}</h1>
+              <h1 className={styles.title}>{post.title}</h1>
               <div className={styles.meta}>
                 <p>By {post.author.name}</p>
-                <p className={styles.separator}>{" ✨ "}</p>
+                <p className={styles.separator}>{" 📅 "}</p>
                 <p>{format(new Date(post.createdAt), "dd MMM yyyy")}</p>
               </div>
             </div>
