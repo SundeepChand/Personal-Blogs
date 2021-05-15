@@ -15,6 +15,7 @@
   color: $primary-text;
   padding: 0 $padding-default;
   box-shadow: 0 1px 5px 1px $navbar-shadow-color;
+  font-family: "Montserrat", sans-serif;
 }
 
 .navmenu {
@@ -27,8 +28,8 @@
 .logo {
   @extend %flex;
   @extend %flex-centered;
-  width: 8%;
-  max-width: $navbar-height-default;
+  // width: 8%;
+  // max-width: $navbar-height-default;
   height: 100%;
 
   &:hover {
@@ -71,6 +72,6 @@
     padding: 0;
   }
   .logo {
-    max-width: $navbar-height-small;
+    // max-width: $navbar-height-small;
   }
 }

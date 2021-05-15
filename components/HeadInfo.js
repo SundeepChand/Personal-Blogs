@@ -5,8 +5,8 @@ export default function HeadInfo() {
   return (
     <div className={styles.container}>
       <div className={styles.about}>
-        <h1>Hello World!!</h1>
-        <p>
+        <h1 className={styles.title}>Hello World!!</h1>
+        <p className={styles.content}>
           Welcome to my blogs. I am extremely excited to present before you my
           tech blogs. If you are passionate about development and programming,
           you are just at the right place. Just scroll down.

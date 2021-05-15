@@ -16,6 +16,7 @@
   border-radius: 1%;
   @extend %flex;
   @extend %flex-space-between;
+  font-family: "Newsreader", serif;
 }
 
 .imageContainer {
@@ -33,7 +34,8 @@
 
 .title {
   font-size: $font-default;
-  font-weight: $font-darker;
+  font-weight: $font-dark;
+  font-family: "Montserrat", sans-serif;
 }
 
 .meta {
@@ -50,7 +52,7 @@
 }
 
 .postDescription {
-  font-size: $font-smaller;
+  font-size: $font-small;
 }
 
 .buttonDiv {
