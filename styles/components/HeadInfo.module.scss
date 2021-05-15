@@ -1,0 +1,40 @@
+@import "../variables/colors.scss";
+@import "../placeholders/layout.scss";
+
+.container {
+  @extend %flex;
+  @extend %flex-wrap-reverse;
+  box-shadow: 0px 0px 10px 0px rgb(223, 223, 223);
+  width: 92%;
+  height: 450px;
+  margin: auto;
+  overflow: hidden;
+  border-radius: 2%;
+  margin-top: 120px;
+  backdrop-filter: blur(3px);
+  background: $glass;
+}
+
+.about {
+  width: 40%;
+  @extend %flex;
+  @extend %flex-centered;
+  padding: 2%;
+  text-align: justify;
+}
+
+.imageContainer {
+  width: 60%;
+}
+
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 100%;
+  }
+  .imageContainer {
+    width: 100%;
+  }
+  .about {
+    width: 100%;
+  }
+}

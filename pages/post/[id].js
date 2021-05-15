@@ -2,12 +2,14 @@ import Head from "next/head";
 import remark from "remark";
 import html from "remark-html";
 import { format } from "date-fns";
-import Header from "../../components/Header";
+import HeaderImage from "../../components/HeaderImage";
 import Layout from "../../components/Layout";
 import LikeButton from "../../components/LikeButton";
 import CommentsSection from "../../components/CommentsSection";
 import { getAllPostIds, getPostById } from "../../lib/posts";
 import styles from "../../styles/pages/Post.page.module.scss";
+import HeaderPlain from "../../components/Header";
+import { wavePattern } from "../../assets/patterns/wave";
 
 export default function Post({ post }) {
   return (
@@ -15,6 +17,8 @@ export default function Post({ post }) {
       <Head>
         <title>{post.title} | Sundeep's blogs</title>
       </Head>
+
+      <HeaderPlain pattern={wavePattern} />
 
       <div className={styles.container}>
         <div className={styles.likesContainer}>
@@ -38,12 +42,12 @@ export default function Post({ post }) {
             </div>
             {(post.headerImage || post.headerImageUrl) && (
               <div>
-                <Header
+                <HeaderImage
                   imgSrc={post.headerImage?.url ?? post.headerImageUrl}
                   alt={post.headerImageCaption}
                 >
                   {post.headerImageCaption}
-                </Header>
+                </HeaderImage>
               </div>
             )}
             <div className={styles.meta}>

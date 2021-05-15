@@ -1,8 +1,10 @@
 import Head from "next/head";
 import Layout from "../components/Layout";
 import Header from "../components/Header";
+import HeadInfo from "../components/HeadInfo";
 import PostLayout from "../components/PostsLayout";
 import { getSortedPosts } from "../lib/posts";
+import { wavePattern } from "../assets/patterns/wave";
 
 export default function Home({ posts }) {
   return (
@@ -10,7 +12,8 @@ export default function Home({ posts }) {
       <Head>
         <title>Home</title>
       </Head>
-      <Header imgSrc="/images/hero-home.jpg" alt={"Blocks"} />
+      <Header pattern={wavePattern} />
+      <HeadInfo />
       <PostLayout posts={posts} />
     </Layout>
   );

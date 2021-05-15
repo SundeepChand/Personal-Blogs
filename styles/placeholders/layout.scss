@@ -3,6 +3,10 @@
   align-items: center;
   flex-wrap: wrap;
 
+  &-wrap-reverse {
+    flex-wrap: wrap-reverse;
+  }
+
   &-nowrap {
     flex-wrap: nowrap;
   }

@@ -10,10 +10,11 @@
   @extend %flex-nowrap;
   width: 100%;
   height: $navbar-height-default;
-  background: $primary-gradient;
+  background: $glass;
+  backdrop-filter: blur(3px);
   color: $primary-text;
   padding: 0 $padding-default;
-  box-shadow: 0 2px 15px 1px $navbar-shadow-color;
+  box-shadow: 0 1px 5px 1px $navbar-shadow-color;
 }
 
 .navmenu {

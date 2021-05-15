@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import Header from "../../components/Header";
+import HeaderImage from "../../components/HeaderImage";
 import ProfileImage from "../../components/ProfileImage";
 import AboutInfo from "../../components/AboutInfo";
 import { getAboutData } from "../../lib/about";
@@ -14,7 +14,7 @@ export default function About({ data }) {
         <title>About Me</title>
       </Head>
 
-      <Header imgSrc="/images/hero-about.jpg" alt="Plasma bulb" />
+      <HeaderImage imgSrc="/images/hero-about.jpg" alt="Plasma bulb" />
       <main style={mainStyle}>
         <ProfileImage image={data.ProfileImage} alt="Profile Picture" />
 
