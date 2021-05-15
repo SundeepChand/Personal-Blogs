@@ -19,7 +19,7 @@ export default function Navbar() {
         <Link href="/about">
           <div className={styles.btnNav}>
             <a>
-              <p>About Me</p>
+              <p>About</p>
             </a>
           </div>
         </Link>

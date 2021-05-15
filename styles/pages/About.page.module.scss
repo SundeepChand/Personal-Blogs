@@ -1,0 +1,39 @@
+@import "../variables/colors.scss";
+@import "../placeholders/layout.scss";
+
+.container {
+  background: $glass;
+  width: 80%;
+  margin: auto;
+  margin-top: 60px;
+  padding: 20px 0px;
+  border-radius: 1%;
+  margin-bottom: 20px;
+  box-shadow: 0 -1px 2px 1px $soft-shadow-color;
+  @extend %flex;
+  @extend %flex-centered;
+  @extend %flex-wrap-reverse;
+}
+
+.aboutContainer {
+  width: 60%;
+}
+
+.illustration {
+  width: 40%;
+}
+
+@media only screen and (max-width: 1060px) {
+  .aboutContainer {
+    width: 100%;
+  }
+
+  .illustration {
+    display: none;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .container {
+    width: 100%;
+  }
+}
