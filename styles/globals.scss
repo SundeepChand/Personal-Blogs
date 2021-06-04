@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Newsreader:wght@400;500&family=Staatliches&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap");
+
+@import "./variables/font.scss";
 
 html,
 body {
@@ -22,6 +25,51 @@ a:active {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+}
+
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Montserrat", sans-serif;
+}
+
+h2 {
+  font-size: $font-larger;
+  font-weight: $font-darker;
+}
+h3 {
+  font-size: $font-large;
+  font-weight: $font-dark;
+  text-decoration: underline;
+  margin-top: 10px;
+}
+h4 {
+  font-size: $font-default;
+  font-weight: $font-normal;
+  text-decoration: underline;
+}
+
+ul {
+  padding: 15px;
+}
+
+/* Style the code tags */
+pre {
+  overflow-x: scroll;
+  padding: 15px;
+  box-shadow: 0px 0px 4px 0px rgba(71, 71, 71, 0.507) inset;
+  border-radius: 10px;
+  font-family: "Courier Prime", monospace;
+  font-size: 16px;
+  margin: 18px 0px;
+  background-color: rgba(233, 233, 233, 0.712);
+}
+code {
+  overflow-x: scroll;
+  font-family: "Courier Prime", monospace;
+  background-color: rgba(233, 233, 233, 0.473);
+  padding: 2px;
 }
 
 /* -- NProgress styles -- */
