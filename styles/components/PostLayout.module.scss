@@ -2,7 +2,7 @@
 
 .container {
   @extend %flex;
-  @extend %flex-space-around;
+  @extend %flex-start;
   padding: 35px 20px;
 }
 

@@ -11,6 +11,10 @@
     flex-wrap: nowrap;
   }
 
+  &-start {
+    justify-content: start;
+  }
+
   &-centered {
     justify-content: center;
   }
