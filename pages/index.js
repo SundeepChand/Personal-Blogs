@@ -11,6 +11,10 @@ export default function Home({ posts }) {
     <Layout home>
       <Head>
         <title>Home</title>
+        <meta
+          name="description"
+          content="Hi There! I'm Sundeep. Welcome to my personal blogs"
+        />
       </Head>
       <Header pattern={wavePattern} />
       <HeadInfo />

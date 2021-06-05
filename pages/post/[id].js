@@ -22,6 +22,16 @@ export default function Post({ post }) {
     <Layout postPage>
       <Head>
         <title>{post.title} | Sundeep's blogs</title>
+        <meta property="og:title" content={post.title} />
+        <meta property="og:type" content={`article:${post.author.name}`} />
+        <meta
+          property="og:url"
+          content={`https://www.sundeep.codes/post/${post.id}`}
+        />
+        <meta
+          property="og:image"
+          content={post.headerImage?.url ?? post.headerImageUrl}
+        />
       </Head>
 
       <HeaderPlain pattern={wavePattern} />
