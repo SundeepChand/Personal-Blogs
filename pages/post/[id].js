@@ -1,4 +1,6 @@
 import Head from "next/head";
+import { useEffect } from "react";
+import hljs from "highlight.js";
 import remark from "remark";
 import html from "remark-html";
 import { format } from "date-fns";
@@ -12,6 +14,10 @@ import HeaderPlain from "../../components/Header";
 import { wavePattern } from "../../assets/patterns/wave";
 
 export default function Post({ post }) {
+  useEffect(() => {
+    hljs.initHighlighting();
+    console.log("Initialise hljs");
+  });
   return (
     <Layout postPage>
       <Head>
