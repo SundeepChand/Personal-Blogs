@@ -72,6 +72,13 @@ code {
   padding: 2px;
 }
 
+/* -- Style for utterances --*/
+@media only screen and (max-width: 768px) {
+  .utterances-frame {
+    height: 110%;
+  }
+}
+
 /* -- NProgress styles -- */
 @import "./variables/colors.scss";
 

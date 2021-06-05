@@ -22,6 +22,7 @@ export default function Post({ post }) {
     <Layout postPage>
       <Head>
         <title>{post.title} | Sundeep's blogs</title>
+        <meta name="description" content={post.description} />
         <meta property="og:title" content={post.title} />
         <meta property="og:type" content={`article:${post.author.name}`} />
         <meta
@@ -41,11 +42,9 @@ export default function Post({ post }) {
           <div className={styles.likeButton}>
             <LikeButton postId={post.id} likes={post.likes} id={post.id} />
           </div>
-          {/*
           <div className={styles.commentIcon}>
             <CommentsSection />
           </div>
-          */}
         </div>
 
         <div className={styles.contentContainer}>
