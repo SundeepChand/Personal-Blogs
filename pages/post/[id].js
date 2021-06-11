@@ -15,8 +15,7 @@ import { wavePattern } from "../../assets/patterns/wave";
 
 export default function Post({ post }) {
   useEffect(() => {
-    hljs.initHighlighting();
-    console.log("Initialise hljs");
+    hljs.highlightAll();
   });
   return (
     <Layout postPage>
