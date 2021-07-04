@@ -5,8 +5,9 @@ import HeadInfo from "../components/HeadInfo";
 import PostLayout from "../components/PostsLayout";
 import { getSortedPosts } from "../lib/posts";
 import { wavePattern } from "../assets/patterns/wave";
+import { getHomeData } from "../lib/home";
 
-export default function Home({ posts }) {
+export default function Home({ posts, homeInfo }) {
   return (
     <Layout home>
       <Head>
@@ -17,17 +18,20 @@ export default function Home({ posts }) {
         />
       </Head>
       <Header pattern={wavePattern} />
-      <HeadInfo />
+      <HeadInfo info={homeInfo} />
       <PostLayout posts={posts} />
     </Layout>
   );
 }
 
 export async function getStaticProps() {
-  const allPosts = await getSortedPosts();
+  // Get all posts and home description
+  const posts = await getSortedPosts();
+  const homeInfo = await getHomeData();
   return {
     props: {
-      posts: allPosts,
+      posts,
+      homeInfo,
     },
   };
 }

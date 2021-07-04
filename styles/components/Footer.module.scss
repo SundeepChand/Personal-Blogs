@@ -11,7 +11,7 @@
   height: $navbar-height-default;
   color: $white;
   font-size: $font-small;
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
 }
 
 @media only screen and (max-width: 768px) {

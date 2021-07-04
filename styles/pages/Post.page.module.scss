@@ -8,7 +8,7 @@
   @extend %flex-nowrap;
   justify-content: center;
   align-items: flex-start;
-  font-family: "Newsreader", serif;
+  font-family: $font-family-newsreader;
 }
 
 .contentContainer {
@@ -27,7 +27,7 @@
 }
 
 .title {
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
   font-size: $font-title;
   font-weight: $font-dark;
 }
@@ -65,7 +65,7 @@
   z-index: 3;
   @extend %flex;
   @extend %flex-centered;
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
 }
 
 .likeButton {

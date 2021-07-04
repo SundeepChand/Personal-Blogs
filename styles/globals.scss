@@ -1,17 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Newsreader:wght@400;500&family=Staatliches&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap");
 
+@import "./variables/colors.scss";
 @import "./variables/font.scss";
 
 html,
 body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
 }
 
 a {
-  color: #0070f3;
+  color: $link-text;
   text-decoration: none;
 }
 
@@ -31,7 +32,7 @@ h2,
 h3,
 h4,
 h5 {
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
 }
 
 h2 {
@@ -62,13 +63,13 @@ pre {
   font-family: "Courier Prime", monospace;
   font-size: 16px;
   margin: 18px 0px;
-  background-color: #282c34;
+  background-color: $code-background-color;
 }
 code {
   overflow-x: scroll;
   font-family: "Courier Prime", monospace;
   font-size: $font-smaller;
-  background-color: rgba(211, 211, 211, 0.473);
+  background-color: $code-snippet-bg-color;
   padding: 2px;
 }
 

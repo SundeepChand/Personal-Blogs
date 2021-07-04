@@ -13,9 +13,9 @@
   background: $glass;
   backdrop-filter: blur(3px);
   color: $primary-text;
-  padding: 0 $padding-default;
+  padding: 0 $padding-10pc;
   box-shadow: 0 1px 5px 1px $navbar-shadow-color;
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
 }
 
 .navmenu {
@@ -28,8 +28,6 @@
 .logo {
   @extend %flex;
   @extend %flex-centered;
-  // width: 8%;
-  // max-width: $navbar-height-default;
   height: 100%;
 
   &:hover {
@@ -40,12 +38,10 @@
 .btnNav {
   @extend %flex;
   text-align: center;
-  width: 160px;
   height: $navbar-height-default;
-  padding: $padding-default;
-  margin: 0;
+  margin: 0 $space-5px;
   font-size: $font-default;
-  font-weight: $font-darker;
+  font-weight: $font-dark;
   transition: 0.2s ease-in;
 
   & a {
@@ -65,13 +61,13 @@
     height: $navbar-height-small;
   }
   .container {
-    padding: 0 $padding-small;
+    padding: 0 $padding-20px;
   }
   .btnNav {
     width: 100px;
     padding: 0;
   }
   .logo {
-    // max-width: $navbar-height-small;
+    max-width: $navbar-height-small;
   }
 }

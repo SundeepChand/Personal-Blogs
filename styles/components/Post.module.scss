@@ -12,11 +12,10 @@
   padding: 0;
   margin: 15px;
   overflow: hidden;
-  background-color: #ffffffbe;
   border-radius: 1%;
   @extend %flex;
   @extend %flex-space-between;
-  font-family: "Newsreader", serif;
+  font-family: $font-family-newsreader;
 }
 
 .imageContainer {
@@ -28,14 +27,14 @@
 }
 
 .content {
-  padding: $padding-post-card;
+  padding: $padding-10px;
   width: 100%;
 }
 
 .title {
   font-size: $font-default;
   font-weight: $font-dark;
-  font-family: "Montserrat", sans-serif;
+  font-family: $font-family-montserrat;
 }
 
 .meta {
