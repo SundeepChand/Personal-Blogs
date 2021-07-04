@@ -13,6 +13,9 @@ export default function About({ data }) {
     <Layout>
       <Head>
         <title>About Me</title>
+        <meta name="description" content="About Sundeep Chand" />
+        <meta property="og:title" content="About Me | Sundeep Chand" />
+        <meta property="og:url" content="https://www.sundeep.codes/about" />
       </Head>
 
       {/*<HeaderImage imgSrc="/images/hero-about.jpg" alt="Plasma bulb" />*/}

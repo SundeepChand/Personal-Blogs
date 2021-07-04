@@ -9,9 +9,9 @@ import Layout from "../../components/Layout";
 import LikeButton from "../../components/LikeButton";
 import CommentsSection from "../../components/CommentsSection";
 import { getAllPostIds, getPostById } from "../../lib/posts";
-import styles from "../../styles/pages/Post.page.module.scss";
 import HeaderPlain from "../../components/Header";
 import { wavePattern } from "../../assets/patterns/wave";
+import styles from "../../styles/pages/Post.page.module.scss";
 
 export default function Post({ post }) {
   useEffect(() => {
