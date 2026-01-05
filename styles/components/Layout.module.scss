@@ -1,4 +1,4 @@
-@import "../variables/sizes.scss";
+@use "../variables/sizes.scss" as *;
 
 .buffer {
   // The extra space to accomodate the bottom bar on mobile devices

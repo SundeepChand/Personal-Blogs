@@ -1,4 +1,4 @@
-@import "../variables/colors.scss";
+@use "../variables/colors.scss" as *;
 
 .container {
   margin: auto;

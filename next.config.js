@@ -1,11 +1,33 @@
 module.exports = {
+  // Use remotePatterns instead of the deprecated domains
   images: {
-    domains: [
-      "images.unsplash.com",
-      "res.cloudinary.com",
-      "upload.wikimedia.org",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+      },
     ],
   },
+
+  // Support for Turbopack (Next.js 16 default)
+  turbopack: {
+    rules: {
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
+      },
+    },
+  },
+
+  // Fallback for Webpack (legacy or specific build scenarios)
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -13,5 +35,10 @@ module.exports = {
     });
 
     return config;
+  },
+
+  experimental: {
+    // Disable if hot reloads are inconsistent
+    turbopackFileSystemCacheForDev: false,
   },
 };

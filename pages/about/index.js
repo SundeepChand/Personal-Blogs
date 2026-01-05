@@ -22,7 +22,7 @@ export default function About({ data }) {
       <Header pattern={wavePattern} />
       <main className={styles.container}>
         <div className={styles.aboutContainer}>
-          <ProfileImage image={data.ProfileImage} alt="Profile Picture" />
+          <ProfileImage image={data.profileImage} alt="Profile Picture" />
           <AboutInfo user={data} />
         </div>
         <div className={styles.illustration}>
@@ -30,10 +30,11 @@ export default function About({ data }) {
             src="/images/illustrations/working_from_anywhere.svg"
             width={768}
             height={660}
-            layout="responsive"
+            alt="An illustration of work from anywhere"
+            loading="lazy"
+            style={{ width: '100%', height: 'auto' }}
           />
         </div>
-        {/*<Projects />*/}
       </main>
     </Layout>
   );

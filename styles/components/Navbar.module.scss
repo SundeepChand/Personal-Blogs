@@ -1,8 +1,8 @@
-@import "../variables/colors.scss";
-@import "../variables/spacing.scss";
-@import "../variables/font.scss";
-@import "../variables/sizes.scss";
-@import "../placeholders/layout.scss";
+@use "../variables/colors.scss" as *;
+@use "../variables/spacing.scss" as *;
+@use "../variables/font.scss" as *;
+@use "../variables/sizes.scss" as *;
+@use "../placeholders/layout.scss" as *;
 
 .container {
   @extend %flex;

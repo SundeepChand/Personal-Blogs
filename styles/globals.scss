@@ -1,8 +1,8 @@
+@use "./variables/colors.scss" as *;
+@use "./variables/font.scss" as *;
+
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Newsreader:wght@400;500&family=Staatliches&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap");
-
-@import "./variables/colors.scss";
-@import "./variables/font.scss";
 
 html,
 body {
@@ -12,14 +12,15 @@ body {
 }
 
 a {
-  color: $link-text;
+  color: inherit;
   text-decoration: none;
 }
 
 a:hover,
 a:focus,
 a:active {
-  text-decoration: underline;
+  text-decoration: inherit;
+  cursor: pointer;
 }
 
 * {
@@ -79,9 +80,6 @@ code {
     height: 110%;
   }
 }
-
-/* -- NProgress styles -- */
-@import "./variables/colors.scss";
 
 /* Make clicks pass-through */
 #nprogress {

@@ -8,27 +8,20 @@ export default function Post({ post }) {
   return (
     <div className={styles.container}>
       <div className={styles.imageContainer}>
-        {!post.headerImageUrl && post.headerImage && (
-          <Image
-            src={post.headerImage.url}
-            layout="fill"
-            objectFit="cover"
-            objectPosition="center"
-          />
-        )}
         {post.headerImageUrl && (
           <Image
             src={post.headerImageUrl}
-            layout="fill"
-            objectFit="cover"
-            objectPosition="center"
+            alt={post.headerImageAltText}
+            style={{ objectPosition: 'top center', objectFit: 'cover' }}
+            loading="lazy"
+            fill
           />
         )}
       </div>
       <div className={styles.content}>
         <div className={styles.title}>{post.title}</div>
         <div className={styles.meta}>
-          <p className={styles.authorName}>By {post.author.name}</p>
+          <p className={styles.authorName}>By {post.author}</p>
           <div>
             <p className={styles.date}>
               {format(new Date(post.createdAt), "dd MMM yyyy")}
@@ -39,9 +32,7 @@ export default function Post({ post }) {
       </div>
       <div className={styles.buttonDiv}>
         <Link href={`/post/${post.id}`}>
-          <a>
-            <Button>Read More ➞</Button>
-          </a>
+          <Button>Read More ➞</Button>
         </Link>
       </div>
     </div>

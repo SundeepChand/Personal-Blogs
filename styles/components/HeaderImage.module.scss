@@ -1,4 +1,4 @@
-@import "../variables/font.scss";
+@use "../variables/font.scss" as *;
 
 .container {
   width: 100%;

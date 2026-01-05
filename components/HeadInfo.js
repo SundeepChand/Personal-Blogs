@@ -13,7 +13,9 @@ export default function HeadInfo({ info }) {
           src="/images/illustrations/programming.svg"
           width={768}
           height={460}
-          layout="responsive"
+          alt="An illustration of a programmer working on his stuff"
+          loading="eager"
+          style={{ width: '100%', height: 'auto' }} 
         />
       </div>
     </div>

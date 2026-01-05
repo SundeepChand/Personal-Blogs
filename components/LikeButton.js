@@ -19,25 +19,6 @@ export default function LikeButton({ postId, likes, id }) {
       initialState = JSON.parse(initialState).liked;
     }
     setLiked(initialState);
-    const fetchLikes = async () => {
-      try {
-        const response = await axios.post(
-          `https://sundeep-blogs.herokuapp.com/graphql`,
-          {
-            query: `query {
-              article (id: "${id}") {
-                likes
-              }
-            }`,
-          }
-        );
-        setLikes(response.data.data.article.likes);
-      } catch (error) {
-        console.log(`Unable to fetch likes for ${id}`);
-        setLikes(likes);
-      }
-    };
-    fetchLikes();
   }, []);
 
   const toggleLikes = async () => {
@@ -59,32 +40,6 @@ export default function LikeButton({ postId, likes, id }) {
     setLiked(!liked);
     cancelToken = axios.CancelToken.source();
     try {
-      const response = await axios.post(
-        `https://sundeep-blogs.herokuapp.com/graphql`,
-        {
-          query: `mutation {
-            updateArticle(input: {
-              where: {
-                id: "${id}"
-              },
-              data: {
-                likes: ${updatedLikes + delta}
-              }
-            }) {
-              article {
-                id
-                likes
-              }
-            }
-          }`,
-        },
-        {
-          cancelToken: cancelToken.token,
-        }
-      );
-      if (response.data.errors) {
-        throw error;
-      }
       window.localStorage.setItem(postId, JSON.stringify({ liked: !liked }));
     } catch (error) {
       // Rollback
@@ -116,9 +71,10 @@ export default function LikeButton({ postId, likes, id }) {
           />
         )}
       </button>
+{/*   Disable likes count till I add a backend store.    
       <div className={styles.likesCount}>
         <span>{updatedLikes === null ? likes : updatedLikes}</span>
-      </div>
+      </div> */}
     </>
   );
 }

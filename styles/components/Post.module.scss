@@ -1,7 +1,7 @@
-@import "../placeholders/layout.scss";
-@import "../variables/font.scss";
-@import "../variables/colors.scss";
-@import "../variables/spacing.scss";
+@use "../placeholders/layout.scss" as *;
+@use "../variables/font.scss" as *;
+@use "../variables/colors.scss" as *;
+@use "../variables/spacing.scss" as *;
 
 .container {
   width: 30%;

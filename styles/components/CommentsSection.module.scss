@@ -1,6 +1,6 @@
-@import "../variables/colors.scss";
-@import "../variables/font.scss";
-@import "../placeholders/layout.scss";
+@use "../variables/colors.scss" as *;
+@use "../variables/font.scss" as *;
+@use "../placeholders/layout.scss" as *;
 
 .commentThreadContainer {
   position: fixed;

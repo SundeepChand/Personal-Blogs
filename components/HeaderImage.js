@@ -8,9 +8,9 @@ export default function HeaderImage({ children, imgSrc, alt }) {
         <Image
           src={imgSrc}
           alt={alt}
-          layout="fill"
-          objectFit="cover"
-          objectPosition="center"
+          loading="lazy"
+          fill
+          style={{ objectPosition: 'top center', objectFit: 'cover' }}
         />
       </div>
 

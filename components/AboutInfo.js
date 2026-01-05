@@ -7,7 +7,7 @@ export default function AboutInfo({ user }) {
         <h1 className={styles.titleText}>About Me</h1>
       </div>
       <div className={styles.description}>
-        <p>{user.Description}</p>
+        <p>{user.description}</p>
       </div>
     </div>
   );

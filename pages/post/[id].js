@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useEffect } from "react";
 import hljs from "highlight.js";
-import remark from "remark";
+import { remark } from "remark";
 import html from "remark-html";
 import { format } from "date-fns";
 import HeaderImage from "../../components/HeaderImage";
@@ -51,16 +51,16 @@ export default function Post({ post }) {
             <div>
               <h1 className={styles.title}>{post.title}</h1>
               <div className={styles.meta}>
-                <p>By {post.author.name}</p>
+                <p>By {post.author}</p>
                 <p className={styles.separator}>{" 📅 "}</p>
                 <p>{format(new Date(post.createdAt), "dd MMM yyyy")}</p>
               </div>
             </div>
-            {(post.headerImage || post.headerImageUrl) && (
+            {post.headerImageUrl && (
               <div>
                 <HeaderImage
-                  imgSrc={post.headerImage?.url ?? post.headerImageUrl}
-                  alt={post.headerImageCaption}
+                  imgSrc={post.headerImageUrl}
+                  alt={post.headerImageAltText}
                 >
                   {post.headerImageCaption}
                 </HeaderImage>

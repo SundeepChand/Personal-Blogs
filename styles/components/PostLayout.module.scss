@@ -1,4 +1,4 @@
-@import "../placeholders/layout.scss";
+@use "../placeholders/layout.scss" as *;
 
 .container {
   @extend %flex;
