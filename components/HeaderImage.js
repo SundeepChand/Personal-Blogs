@@ -10,7 +10,7 @@ export default function HeaderImage({ children, imgSrc, alt }) {
           alt={alt}
           loading="lazy"
           fill
-          style={{ objectPosition: 'top center', objectFit: 'cover' }}
+          style={{ objectPosition: 'center center', objectFit: 'cover' }}
         />
       </div>
 
