@@ -1,6 +1,8 @@
 import Head from "next/head";
 import { useEffect } from "react";
-import hljs from "highlight.js";
+import hljs from "highlight.js/lib/core";
+import cpp from "highlight.js/lib/languages/cpp";
+import "highlight.js/styles/atom-one-dark.css";
 import { remark } from "remark";
 import html from "remark-html";
 import { format } from "date-fns";
@@ -13,10 +15,12 @@ import HeaderPlain from "../../components/Header";
 import { wavePattern } from "../../assets/patterns/wave";
 import styles from "../../styles/pages/Post.page.module.scss";
 
+hljs.registerLanguage('cpp', cpp);
+
 export default function Post({ post }) {
   useEffect(() => {
     hljs.highlightAll();
-  });
+  }, [post.content]);
   return (
     <Layout postPage>
       <Head>
@@ -93,7 +97,7 @@ export async function getStaticPaths() {
 }
 
 async function markdownToHtml(markdown) {
-  const result = await remark().use(html).process(markdown);
+  const result = await remark().use(html, { sanitize: false }).process(markdown);
   return result.toString();
 }
 
