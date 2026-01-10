@@ -4,8 +4,9 @@ publishedAt: "2026-01-08T15:30:00.000Z"
 createdAt: "2026-01-08T15:30:00.000Z"
 updatedAt: "2026-01-08T15:30:00.000Z"
 headerImageCaption: ""
-headerImageUrl: "https://img.freepik.com/free-photo/3d-modern-technology-background-with-plexus-design_1048-16714.jpg"
-headerImageAltText: "An abstract colourful header image"
+headerImageUrl: "../../images/blogs/uuidv7-vs-uuidv4/secondary-index-structure.svg"
+# headerImageUrl: "https://img.freepik.com/free-photo/3d-modern-technology-background-with-plexus-design_1048-16714.jpg"
+headerImageAltText: "Database Index representation"
 author: "Sundeep Chand"
 tags:
   - "dbms"
@@ -19,36 +20,80 @@ I recently came across the idea of UUIDv7 being more optimal as database keys as
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv4-structure.svg'
        alt='UUIDv4-structure'
-       title='UUIDv4-structure'
+       title='UUIDv4 Structure'
        style='width: 100%;'>
+  <figcaption>UUIDv4 Structure</figcaption>
 </figure>
-
+<br\/>
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv7-structure.svg'
        alt='UUIDv7-structure'
        title='UUIDv7-structure'
        style='width: 100%;'>
+  <figcaption>UUIDv7 Structure</figcaption>
 </figure>
 
 
-This blog post is a note of my learnings while digging deeper on the concept. In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in a SQL database.
+This blog post is a note of my learnings while digging deeper on the concept. In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in MySQL database with certain benchmark numbers.
 
 ## A quick primer on how MySQL stores data in disk
 
 All databases read & write to disk in units known as pages (different from OS pages). This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as buffer pool in MySQL) to respond to subsequent queries.
 
 
-MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where the primary key column values form the keys in B+ Tree nodes. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate an exact number of B+ Tree nodes. 
+MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where the primary key column values form the keys of the B+ Tree nodes. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate an exact number of B+ Tree nodes. The figures below show a rough B+ Tree structure that MySQL will store in the disk for the given table.
+
+<figure style='text-align: center;'>
+  <img src='../../images/blogs/uuidv7-vs-uuidv4/table.svg'
+       alt='An example table with id & name columns'
+       title='An example table with id & name columns'
+       style='width: 40%;'>
+  <figcaption>An example table with id & name columns</figcaption>
+</figure>
+<br\/>
+<br\/>
+<figure style='text-align: center;'>
+  <img src='../../images/blogs/uuidv7-vs-uuidv4/btree-structure.svg'
+       alt='The B+ Tree structure for the given table'
+       title='The B+ Tree structure for the given table'
+       style='width: 100%;'>
+  <figcaption>The B+ Tree structure for the given table</figcaption>
+</figure>
 
 
-In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes range queries in MySQL more efficient because multiple sequential rows can be read from disk with minimal Disk I\/O, but, at the same time it does other trade offs like costlier B+ Tree rebalances during page splits, 2 B+ Tree traversals in case of reading by secondary keys, etc. (Fig 3).
+In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes data access faster with primary keys because additional page lookup is not needed, but, at the same time it has other trade offs like costlier B+ Tree rebalances during page splits, 2 B+ Tree traversals in case of reading by secondary keys (See fig below), etc.
 
+<figure style='text-align: center;'>
+  <img src='../../images/blogs/uuidv7-vs-uuidv4/secondary-index-structure.svg'
+       alt='The B+ Tree structure for a secondary index created on name'
+       title='The B+ Tree structure for a secondary index created on name'
+       style='width: 100%;'>
+  <figcaption>The B+ Tree structure for a secondary index created on name column. Note that the data nodes contain the primary key, which is then used to perform another search on the primary index to retrieve the entire row</figcaption>
+</figure>
 
 
 ## Benchmarks
 
-For benchmarking the performance difference between UUIDv4 & UUIDv7, I wrote a Java program to insert 5 million records to my local MySQL DB in batches of 10,000 records. The program is presented in the section below & I discuss the results in the following section. Performing the inserts in batches, helps us benchmark the effect of B+ Trees and minimize the effect of network calls in the reported time. 
+For benchmarking the performance difference between UUIDv4 & UUIDv7, I wrote a Java program to insert 5 million records to my local MySQL DB in batches. Performing the inserts in batches, helps us benchmark the effect of B+ Trees and minimize the effect of network calls in the reported time.
+
+The table schema is as follows, where we keep only 2 columns: id of `BINARY` type to hold raw bytes of UUID string & payload of type `VARCHAR` to hold arbitary payload:
+
+
+<pre>
+<code class='sql'>
+CREATE TABLE uuid_bench\n
+(\n
+&nbsp;&nbsp;id BINARY(16) PRIMARY KEY,\n
+&nbsp;&nbsp;payload VARCHAR(100)\n
+) ENGINE=InnoDB\n
+</code>
+</pre>
+
+
+The reason for preferring BINARY over VARCHAR for UUIDs is that the former is much more space efficient as compared to the later.
+
+The program is presented in the following section & I discuss the results in the later section. 
 
 #### Dependencies (pom.xml)
 
@@ -86,119 +131,119 @@ import java.util.List;\n
 import java.util.UUID;\n
 \n
 class Row {\n
-\tpublic byte[] id;\n
-\tpublic String payload;\n
+&nbsp;&nbsp;public byte[] id;\n
+&nbsp;&nbsp;public String payload;\n
 }\n
 \n
 @FunctionalInterface\n
 interface UuidGenerator {\n
-\tUUID generateUuid();\n
+&nbsp;&nbsp;UUID generateUuid();\n
 }\n
 \n
 public class Main {\n
-\tprivate static final int ROWS = 5_000_000;\n
-\tprivate static final int BATCH_SIZE = 10_000;\n
+&nbsp;&nbsp;private static final int ROWS = 5_000_000;\n
+&nbsp;&nbsp;private static final int BATCH_SIZE = 10_000;\n
 \n
-\tprivate static final String JDBC_URL =\n
-\t\t\t\"jdbc:mysql://localhost:3306/uuid_benchmark?useSSL=true&rewriteBatchedStatements=true\";\n
-\tprivate static final String USER = \"root\";\n
-\tprivate static final String PASS = \"my-secret-pw\";\n
+&nbsp;&nbsp;private static final String JDBC_URL =\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"jdbc:mysql://localhost:3306/uuid_benchmark?useSSL=true&rewriteBatchedStatements=true\";\n
+&nbsp;&nbsp;private static final String USER = \"root\";\n
+&nbsp;&nbsp;private static final String PASS = \"my-secret-pw\";\n
 \n
-\tpublic static void main(String[] args) {\n
-\t\ttry (Connection conn = DriverManager.getConnection(JDBC_URL, USER, PASS)) {\n
+&nbsp;&nbsp;public static void main(String[] args) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;try (Connection conn = DriverManager.getConnection(JDBC_URL, USER, PASS)) {\n
 \n
-\t\t\tconn.setAutoCommit(false);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn.setAutoCommit(false);\n
 \n
-\t\t\tcreateTable(conn, \"uuid_v4_bench\");\n
-\t\t\tbenchmark(\n
-\t\t\t\tconn,\n
-\t\t\t\t\"UUIDv4\",\n
-\t\t\t\t\"uuid_v4_bench\",\n
-\t\t\t\tgenerateDataset(() -> UUID.randomUUID())\n
-\t\t\t);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;createTable(conn, \"uuid_v4_bench\");\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;benchmark(\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn,\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"UUIDv4\",\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"uuid_v4_bench\",\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;generateDataset(() -> UUID.randomUUID())\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);\n
 \n
-\t\t\tcreateTable(conn, \"uuid_v7_bench\");\n
-\t\t\tbenchmark(\n
-\t\t\t\tconn,\n
-\t\t\t\t\"UUIDv7\",\n
-\t\t\t\t\"uuid_v7_bench\",\n
-\t\t\t\tgenerateDataset(() -> Generators.timeBasedEpochGenerator().generate())\n
-\t\t\t);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;createTable(conn, \"uuid_v7_bench\");\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;benchmark(\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn,\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"UUIDv7\",\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"uuid_v7_bench\",\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;generateDataset(() -> Generators.timeBasedEpochGenerator().generate())\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);\n
 \n
-\t\t} catch (Exception e) {\n
-\t\t\te.printStackTrace();\n
-\t\t}\n
-\t}\n
+&nbsp;&nbsp;&nbsp;&nbsp;} catch (Exception e) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();\n
+&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;}\n
 \n
-\tprivate static void benchmark(Connection conn, String name, String tableName, List&ltRow[]&gt dataset)\n
-\t\t\tthrows SQLException {\n
+&nbsp;&nbsp;private static void benchmark(Connection conn, String name, String tableName, List&ltRow[]&gt dataset)\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throws SQLException {\n
 \n
-\t\tlong start = System.nanoTime();\n
+&nbsp;&nbsp;&nbsp;&nbsp;long start = System.nanoTime();\n
 \n
-\t\ttry (PreparedStatement ps =\n
-\t\t\t\t\t conn.prepareStatement(\"INSERT INTO \" + tableName + \" (id, payload) VALUES (?, ?)\")) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;try (PreparedStatement ps =\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; conn.prepareStatement(\"INSERT INTO \" + tableName + \" (id, payload) VALUES (?, ?)\")) {\n
 \n
-\t\t\tfor (Row[] batch : dataset) {\n
-\t\t\t\tfor (Row row : batch) {\n
-\t\t\t\t\tps.setBytes(1, row.id);\n
-\t\t\t\t\tps.setString(2, row.payload);\n
-\t\t\t\t\tps.addBatch();\n
-\t\t\t\t}\n
-\t\t\t\tps.executeBatch();\n
-\t\t\t\tconn.commit();\n
-\t\t\t}\n
-\t\t}\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (Row[] batch : dataset) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (Row row : batch) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ps.setBytes(1, row.id);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ps.setString(2, row.payload);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ps.addBatch();\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ps.executeBatch();\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conn.commit();\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;}\n
 \n
-\t\tlong end = System.nanoTime();\n
-\t\tdouble seconds = (end - start) / 1e9;\n
+&nbsp;&nbsp;&nbsp;&nbsp;long end = System.nanoTime();\n
+&nbsp;&nbsp;&nbsp;&nbsp;double seconds = (end - start) / 1e9;\n
 \n
-\t\tSystem.out.printf(\n
-\t\t\t\t\"%s: %,d inserts in %.2f s (%,.0f inserts/s)%n\",\n
-\t\t\t\tname, ROWS, seconds, ROWS / seconds\n
-\t\t);\n
-\t}\n
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.printf(\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"%s: %,d inserts in %.2f s (%,.0f inserts/s)%n\",\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name, ROWS, seconds, ROWS / seconds\n
+&nbsp;&nbsp;&nbsp;&nbsp;);\n
+&nbsp;&nbsp;}\n
 \n
-\tprivate static void createTable(Connection conn, String tableName) throws SQLException {\n
-\t\ttry (Statement st = conn.createStatement()) {\n
-\t\t\tst.execute(\"DROP TABLE IF EXISTS \" + tableName);\n
-\t\t\tst.execute(\"CREATE TABLE \" + tableName + \"\"\"\n
-\t\t\t\t(\n
-\t\t\t\t id BINARY(16) PRIMARY KEY,\n
-\t\t\t\t payload VARCHAR(100)\n
-\t\t\t\t) ENGINE=InnoDB\"\"\");\n
-\t\t}\n
-\t\tconn.commit();\n
-\t}\n
+&nbsp;&nbsp;private static void createTable(Connection conn, String tableName) throws SQLException {\n
+&nbsp;&nbsp;&nbsp;&nbsp;try (Statement st = conn.createStatement()) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;st.execute(\"DROP TABLE IF EXISTS \" + tableName);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;st.execute(\"CREATE TABLE \" + tableName + \"\"\"\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id BINARY(16) PRIMARY KEY,\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; payload VARCHAR(100)\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) ENGINE=InnoDB\"\"\");\n
+&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;conn.commit();\n
+&nbsp;&nbsp;}\n
 \n
-\tprivate static List&ltRow[]&gt generateDataset(UuidGenerator uuidGenerator) {\n
-\t\tList&ltRow[]&gt dataset = new java.util.ArrayList&lt&gt();\n
+&nbsp;&nbsp;private static List&ltRow[]&gt generateDataset(UuidGenerator uuidGenerator) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;List&ltRow[]&gt dataset = new java.util.ArrayList&lt&gt();\n
 \n
-\t\tfor (int i = 0; i < ROWS;) {\n
-\t\t\tRow[] batch = new Row[BATCH_SIZE];\n
-\t\t\tfor (int j = 0; j < BATCH_SIZE; j++) {\n
-\t\t\t\tRow row = new Row();\n
-\t\t\t\trow.id = convertUuidToBytes(uuidGenerator.generateUuid());\n
-\t\t\t\trow.payload = \"Payload for row \" + (i + j);\n
-\t\t\t\tbatch[j] = row;\n
-\t\t\t}\n
-\t\t\tdataset.add(batch);\n
-\t\t\ti += BATCH_SIZE;\n
-\t\t}\n
-\t\treturn dataset;\n
-\t}\n
+&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < ROWS;) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Row[] batch = new Row[BATCH_SIZE];\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (int j = 0; j < BATCH_SIZE; j++) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Row row = new Row();\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;row.id = convertUuidToBytes(uuidGenerator.generateUuid());\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;row.payload = \"Payload for row \" + (i + j);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;batch[j] = row;\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset.add(batch);\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i += BATCH_SIZE;\n
+&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;return dataset;\n
+&nbsp;&nbsp;}\n
 \n
-\tpublic static byte[] convertUuidToBytes(UUID uuid) {\n
-\t\tbyte[] bytes = new byte[16];\n
-\t\tlong mostSigBits = uuid.getMostSignificantBits();\n
-\t\tlong leastSigBits = uuid.getLeastSignificantBits();\n
-\t\tfor (int i = 0; i < 8; i++) {\n
-\t\t\tbytes[i] = (byte) ((mostSigBits >> (8 * (7 - i))) & 0xFF);\n
-\t\t}\n
-\t\tfor (int i = 8; i < 16; i++) {\n
-\t\t\tbytes[i] = (byte) ((leastSigBits >> (8 * (15 - i))) & 0xFF);\n
-\t\t}\n
-\t\treturn bytes;\n
-\t}\n
+&nbsp;&nbsp;public static byte[] convertUuidToBytes(UUID uuid) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;byte[] bytes = new byte[16];\n
+&nbsp;&nbsp;&nbsp;&nbsp;long mostSigBits = uuid.getMostSignificantBits();\n
+&nbsp;&nbsp;&nbsp;&nbsp;long leastSigBits = uuid.getLeastSignificantBits();\n
+&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < 8; i++) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bytes[i] = (byte) ((mostSigBits >> (8 * (7 - i))) & 0xFF);\n
+&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 8; i < 16; i++) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bytes[i] = (byte) ((leastSigBits >> (8 * (15 - i))) & 0xFF);\n
+&nbsp;&nbsp;&nbsp;&nbsp;}\n
+&nbsp;&nbsp;&nbsp;&nbsp;return bytes;\n
+&nbsp;&nbsp;}\n
 }
 </code>
 </pre>
@@ -206,8 +251,86 @@ public class Main {\n
 
 ### Benchmark results & conclusions
 
+The output after running the program is as follows:
+
+
+<pre>
+<code class='plaintext'>
+# For 5,000,000 records with batch size 10,000\n
+UUIDv4: 5,000,000 inserts in 217.83 s (22,954 inserts/s)\n
+UUIDv7: 5,000,000 inserts in 28.58 s (174,939 inserts/s)
+</code>
+</pre>
+
+
+UUIDv7 is ~87% faster than UUIDv4
+
+
+<pre>
+<code class='plaintext'>
+# For 5,000,000 records with batch size 1,000\n
+UUIDv4: 5,000,000 inserts in 290.90 s (17,188 inserts/s)\n
+UUIDv7: 5,000,000 inserts in 55.84 s (89,538 inserts/s)
+</code>
+</pre>
+
+
+UUIDv7 is ~81% faster than UUIDv4
+
+
+This clearly shows that batch inserts of UUIDv7 is ~87% faster than UUIDv4s. As I tried to reduce the batch-size, the performance difference between the two, reduced slightly. This is because the IDs in a batch of UUIDv7 are sequential and thus lead to predictable order of insertions in the B+ Tree pages. It is also able to take better advantage of the cached pages, as the page that is being written would have already been cached by a previous write. Whereas in the case of UUIDv4, the IDs in a batch are completely random and thus leads to reading of multiple different pages & the cache usage isn't that optimal.
+
+
+Since the data is placed sequentially on the disk based on primary key, when using UUIDv7, range queries are more performant as compared to UUIDv4. The performance difference between the two IDs is very clear for the kind of queries where we want to fetch the last few records from the DB as can be seen in the `EXPLAIN ANALYZE` result below (as can be seen, the time difference between UUIDv7 & UUIDv4 is quite significant):
+
+
+<pre>
+<code class='sql'>
+mysql&gt; EXPLAIN ANALYZE SELECT * FROM uuid_v4_bench ORDER BY id DESC LIMIT 100;\n
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n
+| EXPLAIN                                                                                                                                                                                                          |\n
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n
+&nbsp;&nbsp;-> Limit: 100 row(s)  (cost=0.574 rows=100) (actual time=10.1..10.1 rows=100 loops=1)\n
+&nbsp;&nbsp;&nbsp;&nbsp;-> Index scan on uuid_v4_bench using PRIMARY (reverse)  (cost=0.574 rows=100) (actual time=10..10.1 rows=100 loops=1)\n
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n
+1 row in set (0.012 sec)\n
+\n
+mysql&gt; EXPLAIN ANALYZE SELECT * FROM uuid_v7_bench ORDER BY id DESC LIMIT 100;\n
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n
+| EXPLAIN                                                                                                                                                                                                                |\n
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n
+&nbsp;&nbsp;-> Limit: 100 row(s)  (cost=0.489 rows=100) (actual time=0.394..0.465 rows=100 loops=1)\n
+&nbsp;&nbsp;&nbsp;&nbsp;-> Index scan on uuid_v7_bench using PRIMARY (reverse)  (cost=0.489 rows=100) (actual time=0.377..0.441 rows=100 loops=1)\n
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n
+1 row in set (0.007 sec)
+</code>
+</pre>
+
+
+The random order of writes in case of UUIDv4 causes random page splits (& consequently a rebalancing of the node entries) thus contributing to somewhat more number of Disk I\/O operations per write. This also leads to the B+ Tree nodes in the indexes being filled non-uniformly as can be seen in the primary index size differences between the two (UUIDv7 index is ~11% bigger than UUIDv4). This is because with sequential writes the B+ Tree nodes aren't completely filled as the writes always happen in the rightmost node. Random writes with UUIDv4 on the other hand leads to a better packing of entries in the B+ Tree nodes:
+
+
+<pre>
+<code class='sql'>
+mysql&gt; SELECT TABLE_NAME, ROUND(DATA_LENGTH / 1024 / 1024, 2)\n
+-> AS `Primary_Index_Size_MB` FROM information_schema.TABLES\n
+-> WHERE TABLE_SCHEMA = 'uuid_benchmark';\n
++---------------+-----------------------+\n
+| TABLE_NAME    | Primary_Index_Size_MB |\n
++---------------+-----------------------+\n
+| uuid_v4_bench |                444.98 |\n
+| uuid_v7_bench |                496.00 |\n
++---------------+-----------------------+\n
+2 rows in set (0.033 sec)
+</code>
+</pre>
+
 
 ## Conclusion
+
+
+So based on the results above, I will say that, UUIDv7 has certain advantages over purely random UUIDv4, because of better page cache usage, with slight trade-off in index size. But like any other solution, if used at the right place it can give significant performance benefits. By supporting sequential generation of IDs & having randomness of UUIDs it offers a great trade-off for cases where range scans are frequent. It is a solid replacement for UUIDv4 in cases where the IDs don't have to be purely random (as the sequential IDs can often leak information regarding the time when entries are created). Like UUIDv4 it is also great replacement for Auto-Increment IDs which have their own challenges when used in Multi-Primary replicated clusters. All-in-all its a great middle ground between sequential Auto-Increment IDs & purely random UUIDs.
+
 
 ## References
 

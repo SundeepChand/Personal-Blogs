@@ -4,6 +4,7 @@ import hljs from "highlight.js/lib/core";
 import cpp from "highlight.js/lib/languages/cpp";
 import java from "highlight.js/lib/languages/java";
 import xml from "highlight.js/lib/languages/xml";
+import sql from "highlight.js/lib/languages/sql";
 import "highlight.js/styles/atom-one-dark.css";
 import { remark } from "remark";
 import html from "remark-html";
@@ -20,6 +21,7 @@ import styles from "../../styles/pages/Post.page.module.scss";
 hljs.registerLanguage('cpp', cpp);
 hljs.registerLanguage('java', java);
 hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('sql', sql);
 
 export default function Post({ post }) {
   useEffect(() => {
