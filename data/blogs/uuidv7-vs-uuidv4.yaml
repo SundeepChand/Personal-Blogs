@@ -23,6 +23,7 @@ I recently came across the idea of UUIDv7 being more optimal as database keys as
        style='width: 100%;'>
 </figure>
 
+
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv7-structure.svg'
        alt='UUIDv7-structure'
@@ -30,23 +31,178 @@ I recently came across the idea of UUIDv7 being more optimal as database keys as
        style='width: 100%;'>
 </figure>
 
-</br>
-This blog post is a note of my learnings while digging deeper on the concept.
 
-In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in a SQL database.
+This blog post is a note of my learnings while digging deeper on the concept. In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in a SQL database.
 
-</br>
-## A quick primer on how MySQL stores data in disk:
+## A quick primer on how MySQL stores data in disk
 
-All databases read & write to disk in units known as pages. This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as buffer pool in MySQL) to respond to subsequent queries.
+All databases read & write to disk in units known as pages (different from OS pages). This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as buffer pool in MySQL) to respond to subsequent queries.
 
-MySQLs InnoDB storage engine stores the table as a B+Tree in the disk, where the primary key column values are used as the B+Tree key. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate an exact number of B+ Tree nodes. 
 
-In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes range queries in MySQL more efficient because multiple sequential rows can be read from disk with minimal Disk I/O, but, at the same time it does other trade offs like costlier B+ Tree rebalances, 2 B+ Tree traversals in case of reading by secondary key (Fig 3).
+MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where the primary key column values form the keys in B+ Tree nodes. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate an exact number of B+ Tree nodes. 
+
+
+In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes range queries in MySQL more efficient because multiple sequential rows can be read from disk with minimal Disk I\/O, but, at the same time it does other trade offs like costlier B+ Tree rebalances during page splits, 2 B+ Tree traversals in case of reading by secondary keys, etc. (Fig 3).
+
+
 
 ## Benchmarks
 
-### Benchmarking program
+For benchmarking the performance difference between UUIDv4 & UUIDv7, I wrote a Java program to insert 5 million records to my local MySQL DB in batches of 10,000 records. The program is presented in the section below & I discuss the results in the following section. Performing the inserts in batches, helps us benchmark the effect of B+ Trees and minimize the effect of network calls in the reported time. 
+
+#### Dependencies (pom.xml)
+
+
+<pre>
+<code class='xml'>
+&ltdependencies&gt\n
+    \t&ltdependency&gt\n
+        \t\t&ltgroupId&gtcom.mysql&lt\/groupId&gt\n
+        \t\t&ltartifactId&gtmysql-connector-j&lt\/artifactId&gt\n
+        \t\t&ltversion&gt9.5.0&lt\/version&gt\n
+    \t&lt\/dependency&gt\n\n
+    \t&lt!--Dependency for generating UUIDv7--&gt\n
+    \t&ltdependency&gt\n
+        \t\t&ltgroupId&gtcom.fasterxml.uuid&lt\/groupId&gt\n
+        \t\t&ltartifactId&gtjava-uuid-generator&lt\/artifactId&gt\n
+        \t\t&ltversion&gt5.1.0&lt\/version&gt\n
+    \t&lt\/dependency&gt\n
+&lt\/dependencies&gt\n
+</code>
+</pre>
+
+
+#### Code (Main.java)
+
+
+<pre>
+<code class='java'>
+package com.sundeepchand;\n
+\n
+import com.fasterxml.uuid.Generators;\n
+\n
+import java.sql.*;\n
+import java.util.List;\n
+import java.util.UUID;\n
+\n
+class Row {\n
+\tpublic byte[] id;\n
+\tpublic String payload;\n
+}\n
+\n
+@FunctionalInterface\n
+interface UuidGenerator {\n
+\tUUID generateUuid();\n
+}\n
+\n
+public class Main {\n
+\tprivate static final int ROWS = 5_000_000;\n
+\tprivate static final int BATCH_SIZE = 10_000;\n
+\n
+\tprivate static final String JDBC_URL =\n
+\t\t\t\"jdbc:mysql://localhost:3306/uuid_benchmark?useSSL=true&rewriteBatchedStatements=true\";\n
+\tprivate static final String USER = \"root\";\n
+\tprivate static final String PASS = \"my-secret-pw\";\n
+\n
+\tpublic static void main(String[] args) {\n
+\t\ttry (Connection conn = DriverManager.getConnection(JDBC_URL, USER, PASS)) {\n
+\n
+\t\t\tconn.setAutoCommit(false);\n
+\n
+\t\t\tcreateTable(conn, \"uuid_v4_bench\");\n
+\t\t\tbenchmark(\n
+\t\t\t\tconn,\n
+\t\t\t\t\"UUIDv4\",\n
+\t\t\t\t\"uuid_v4_bench\",\n
+\t\t\t\tgenerateDataset(() -> UUID.randomUUID())\n
+\t\t\t);\n
+\n
+\t\t\tcreateTable(conn, \"uuid_v7_bench\");\n
+\t\t\tbenchmark(\n
+\t\t\t\tconn,\n
+\t\t\t\t\"UUIDv7\",\n
+\t\t\t\t\"uuid_v7_bench\",\n
+\t\t\t\tgenerateDataset(() -> Generators.timeBasedEpochGenerator().generate())\n
+\t\t\t);\n
+\n
+\t\t} catch (Exception e) {\n
+\t\t\te.printStackTrace();\n
+\t\t}\n
+\t}\n
+\n
+\tprivate static void benchmark(Connection conn, String name, String tableName, List&ltRow[]&gt dataset)\n
+\t\t\tthrows SQLException {\n
+\n
+\t\tlong start = System.nanoTime();\n
+\n
+\t\ttry (PreparedStatement ps =\n
+\t\t\t\t\t conn.prepareStatement(\"INSERT INTO \" + tableName + \" (id, payload) VALUES (?, ?)\")) {\n
+\n
+\t\t\tfor (Row[] batch : dataset) {\n
+\t\t\t\tfor (Row row : batch) {\n
+\t\t\t\t\tps.setBytes(1, row.id);\n
+\t\t\t\t\tps.setString(2, row.payload);\n
+\t\t\t\t\tps.addBatch();\n
+\t\t\t\t}\n
+\t\t\t\tps.executeBatch();\n
+\t\t\t\tconn.commit();\n
+\t\t\t}\n
+\t\t}\n
+\n
+\t\tlong end = System.nanoTime();\n
+\t\tdouble seconds = (end - start) / 1e9;\n
+\n
+\t\tSystem.out.printf(\n
+\t\t\t\t\"%s: %,d inserts in %.2f s (%,.0f inserts/s)%n\",\n
+\t\t\t\tname, ROWS, seconds, ROWS / seconds\n
+\t\t);\n
+\t}\n
+\n
+\tprivate static void createTable(Connection conn, String tableName) throws SQLException {\n
+\t\ttry (Statement st = conn.createStatement()) {\n
+\t\t\tst.execute(\"DROP TABLE IF EXISTS \" + tableName);\n
+\t\t\tst.execute(\"CREATE TABLE \" + tableName + \"\"\"\n
+\t\t\t\t(\n
+\t\t\t\t id BINARY(16) PRIMARY KEY,\n
+\t\t\t\t payload VARCHAR(100)\n
+\t\t\t\t) ENGINE=InnoDB\"\"\");\n
+\t\t}\n
+\t\tconn.commit();\n
+\t}\n
+\n
+\tprivate static List&ltRow[]&gt generateDataset(UuidGenerator uuidGenerator) {\n
+\t\tList&ltRow[]&gt dataset = new java.util.ArrayList&lt&gt();\n
+\n
+\t\tfor (int i = 0; i < ROWS;) {\n
+\t\t\tRow[] batch = new Row[BATCH_SIZE];\n
+\t\t\tfor (int j = 0; j < BATCH_SIZE; j++) {\n
+\t\t\t\tRow row = new Row();\n
+\t\t\t\trow.id = convertUuidToBytes(uuidGenerator.generateUuid());\n
+\t\t\t\trow.payload = \"Payload for row \" + (i + j);\n
+\t\t\t\tbatch[j] = row;\n
+\t\t\t}\n
+\t\t\tdataset.add(batch);\n
+\t\t\ti += BATCH_SIZE;\n
+\t\t}\n
+\t\treturn dataset;\n
+\t}\n
+\n
+\tpublic static byte[] convertUuidToBytes(UUID uuid) {\n
+\t\tbyte[] bytes = new byte[16];\n
+\t\tlong mostSigBits = uuid.getMostSignificantBits();\n
+\t\tlong leastSigBits = uuid.getLeastSignificantBits();\n
+\t\tfor (int i = 0; i < 8; i++) {\n
+\t\t\tbytes[i] = (byte) ((mostSigBits >> (8 * (7 - i))) & 0xFF);\n
+\t\t}\n
+\t\tfor (int i = 8; i < 16; i++) {\n
+\t\t\tbytes[i] = (byte) ((leastSigBits >> (8 * (15 - i))) & 0xFF);\n
+\t\t}\n
+\t\treturn bytes;\n
+\t}\n
+}
+</code>
+</pre>
+
 
 ### Benchmark results & conclusions
 
