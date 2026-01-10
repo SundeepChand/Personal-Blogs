@@ -18,6 +18,10 @@
   font-family: $font-family-montserrat;
 }
 
+.container a {
+  color: inherit;
+}
+
 .navmenu {
   @extend %flex;
   @extend %flex-nowrap;

@@ -12,7 +12,7 @@ body {
 }
 
 a {
-  color: inherit;
+  color: $link-text;
   text-decoration: none;
 }
 
@@ -58,8 +58,6 @@ ul {
 
 /* Style the code tags */
 pre {
-  overflow-x: scroll;
-  padding: 15px;
   border-radius: 10px;
   font-family: "Courier Prime", monospace;
   font-size: 16px;
@@ -67,11 +65,14 @@ pre {
   background-color: $code-background-color;
 }
 code {
-  overflow-x: scroll;
   font-family: "Courier Prime", monospace;
   font-size: $font-smaller;
   background-color: $code-snippet-bg-color;
-  padding: 2px;
+}
+
+figcaption {
+  font-size: $font-smaller;
+  color: $light-gray;
 }
 
 /* -- Style for utterances --*/
