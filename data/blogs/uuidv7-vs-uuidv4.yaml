@@ -14,14 +14,28 @@ tags:
 content: "
 ## Intro
 
-I recently came across the idea of UUIDv7 being more optimal as database keys as compared to UUIDv4. This idea has been out there on the internet since more than 2 years now. While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random.
+I recently came across the idea of UUIDv7 being more optimal as database keys as compared to UUIDv4. This idea has been out there on the internet since more than 2 years now. The development of UUIDv7 is based on the ideas of Shopify's ULID. While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random.
 
-     (Fig 1)
+<figure style='text-align: center;'>
+  <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv4-structure.svg'
+       alt='UUIDv4-structure'
+       title='UUIDv4-structure'
+       style='width: 100%;'>
+</figure>
 
+<figure style='text-align: center;'>
+  <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv7-structure.svg'
+       alt='UUIDv7-structure'
+       title='UUIDv7-structure'
+       style='width: 100%;'>
+</figure>
+
+</br>
 This blog post is a note of my learnings while digging deeper on the concept.
 
 In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in a SQL database.
 
+</br>
 ## A quick primer on how MySQL stores data in disk:
 
 All databases read & write to disk in units known as pages. This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as buffer pool in MySQL) to respond to subsequent queries.
@@ -30,15 +44,21 @@ MySQLs InnoDB storage engine stores the table as a B+Tree in the disk, where the
 
 In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes range queries in MySQL more efficient because multiple sequential rows can be read from disk with minimal Disk I/O, but, at the same time it does other trade offs like costlier B+ Tree rebalances, 2 B+ Tree traversals in case of reading by secondary key (Fig 3).
 
-## Benchmark numbers
+## Benchmarks
 
-### Benchmark script
+### Benchmarking program
 
-### Benchmark results & conclusions:
+### Benchmark results & conclusions
 
 
 ## Conclusion
 
 ## References
 
+- [Why UUID7 is better than UUID4 as clustered index in RDBMS](https://itnext.io/why-uuid7-is-better-than-uuid4-as-clustered-index-edb02bf70056)\n
+- [PostgreSQL UUID Performance: Benchmarking Random (v4) and Time-based (v7) UUIDs](https://dev.to/umangsinha12/postgresql-uuid-performance-benchmarking-random-v4-and-time-based-v7-uuids-n9b)\n
+- [How Shopify's engineering improved database writes by 50% with ULID](https://www.youtube.com/watch?v=f53-Iw_5ucA)\n
+- [B+ Trees notes](https://cs186berkeley.net/resources/static/notes/n04-B+Trees.pdf)\n
+- [Introduction To Database Indexing](https://medium.com/@rtawadrous/introduction-to-database-indexes-9b488e243cc1)\n
+- [What May Surprise You About UUIDv7](https://medium.com/@sergeyprokhorenko777/what-may-surprise-you-about-uuidv7-c05303f90af9)\n
 "
