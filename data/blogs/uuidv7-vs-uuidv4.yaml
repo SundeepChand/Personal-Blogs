@@ -15,7 +15,7 @@ tags:
 content: "
 ## Intro
 
-I recently came across few blog posts around how UUIDv4s (Universally Unique Identifier) are suboptimal to be used as primary keys in relational databases. This idea has been out there on the internet since more than 2 years now. The development of UUIDv7 is based on the concepts of Shopify's ULID (Universally Unique Lexicographically Sortable Identifier). While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random. Refer to the images below for a high-level structure of these IDs:
+I recently came across a few blog posts around how UUIDv4s (Universally Unique Identifier) are suboptimal to be used as primary keys in relational databases. This idea has been out there on the internet since more than 2 years now. The development of UUIDv7 is based on the concepts of Shopify's ULID (Universally Unique Lexicographically Sortable Identifier). While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random. Refer to the images below for a high-level structure of these IDs:
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv4-structure.svg'
@@ -39,10 +39,10 @@ In this blog post I briefly note down my learnings on database internals while t
 
 ## A quick primer on how MySQL stores data in disk
 
-All databases read & write to disk in units known as pages (different from OS pages). This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as buffer pool in MySQL) to respond to subsequent queries.
+All databases read & write to disk in units known as pages (different from OS pages). This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as the 'buffer pool' in MySQL) to respond to subsequent queries.
 
 
-MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where the primary key column values form the keys of the B+ Tree nodes. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate an exact number of B+ Tree nodes. The figures below show a rough B+ Tree structure that MySQL will store in the disk for the given table.
+MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where the primary key column values form the keys of the B+ Tree nodes. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate exactly 1 B+ Tree node. The figures below show a rough B+ Tree structure that MySQL will store in the disk for the given table.
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/table.svg'
@@ -62,7 +62,7 @@ MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where t
 </figure>
 
 
-In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes data access faster with primary keys because additional page lookup is not needed, but, at the same time it has other trade offs like costlier B+ Tree rebalances during page splits, 2 B+ Tree traversals in case of reading by secondary keys (See fig below), etc.
+In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes data access faster with primary keys because additional page lookup is not needed, but, at the same time it has other trade offs like costlier B+ Tree rebalances during page splits (because of shifting of actual row entries), 2 B+ Tree traversals in case of reading by secondary keys (See fig below), etc.
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/secondary-index-structure.svg'
@@ -71,6 +71,7 @@ In MySQL the leaf nodes of the primary index's B-Tree contain the actual data ro
        style='width: 100%;'>
   <figcaption>The B+ Tree structure for a secondary index created on name column. Note that the data nodes contain the primary key, which is then used to perform another search on the primary index to retrieve the entire row</figcaption>
 </figure>
+<br/>
 
 
 ## Benchmarks
@@ -256,23 +257,21 @@ The output after running the program is as follows:
 
 <pre>
 <code class='plaintext'>
-# For 5,000,000 records with batch size 10,000,\n
-# UUIDv7 is ~87% faster than UUIDv4\n
 UUIDv4: 5,000,000 inserts in 217.83 s (22,954 inserts/s)\n
 UUIDv7: 5,000,000 inserts in 28.58 s (174,939 inserts/s)
 </code>
 </pre>
+<figcaption style='text-align: center;'>For 5,000,000 records with batch size 10,000, UUIDv7 is ~87% faster than UUIDv4</figcaption>
 <br/>
 
 
 <pre>
 <code class='plaintext'>
-# For 5,000,000 records with batch size 1,000,\n
-# UUIDv7 is ~81% faster than UUIDv4\n
 UUIDv4: 5,000,000 inserts in 290.90 s (17,188 inserts/s)\n
 UUIDv7: 5,000,000 inserts in 55.84 s (89,538 inserts/s)
 </code>
 </pre>
+<figcaption style='text-align: center;'>For 5,000,000 records with batch size 1,000, UUIDv7 is ~81% faster than UUIDv4</figcaption>
 
 
 This clearly shows that batch inserts of UUIDv7 is ~87% faster than UUIDv4s. As I tried to reduce the batch-size, the performance difference between the two, reduced slightly. This is because the IDs in a batch of UUIDv7 are sequential and thus lead to predictable order of insertions in the B+ Tree pages. It is also able to take better advantage of the cached pages, as the page that is being written would have already been cached by a previous write. Whereas in the case of UUIDv4, the IDs in a batch are completely random and thus leads to reading of multiple different pages & the cache usage isn't that optimal.
