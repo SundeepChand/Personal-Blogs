@@ -1,0 +1,44 @@
+title: "UUIDv7 vs UUIDv4 as primary keys"
+description: "Benchmarking MySQL DB with UUIDv4 vs UUIDv7 as primary keys"
+publishedAt: "2026-01-08T15:30:00.000Z"
+createdAt: "2026-01-08T15:30:00.000Z"
+updatedAt: "2026-01-08T15:30:00.000Z"
+headerImageCaption: ""
+headerImageUrl: "https://img.freepik.com/free-photo/3d-modern-technology-background-with-plexus-design_1048-16714.jpg"
+headerImageAltText: "An abstract colourful header image"
+author: "Sundeep Chand"
+tags:
+  - "dbms"
+  - "benchmark"
+  - "uuid"
+content: "
+## Intro
+
+I recently came across the idea of UUIDv7 being more optimal as database keys as compared to UUIDv4. This idea has been out there on the internet since more than 2 years now. While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random.
+
+     (Fig 1)
+
+This blog post is a note of my learnings while digging deeper on the concept.
+
+In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in a SQL database.
+
+## A quick primer on how MySQL stores data in disk:
+
+All databases read & write to disk in units known as pages. This is because disk I/O is significantly costly & hence it is more efficient to read colocated groups of data than performing random reads/writes for individual rows. These pages are then cached in the DB memory (known as buffer pool in MySQL) to respond to subsequent queries.
+
+MySQLs InnoDB storage engine stores the table as a B+Tree in the disk, where the primary key column values are used as the B+Tree key. This is known as the primary index, which is used to efficiently search for records based on primary key. The storage engine is designed in such a way that the a single page (16kb in InnoDB) can accommodate an exact number of B+ Tree nodes. 
+
+In MySQL the leaf nodes of the primary index's B-Tree contain the actual data rows. This kind of index is known as a clustered index, where the physical layout of data on the disk is ordered based on the primary key. This makes range queries in MySQL more efficient because multiple sequential rows can be read from disk with minimal Disk I/O, but, at the same time it does other trade offs like costlier B+ Tree rebalances, 2 B+ Tree traversals in case of reading by secondary key (Fig 3).
+
+## Benchmark numbers
+
+### Benchmark script
+
+### Benchmark results & conclusions:
+
+
+## Conclusion
+
+## References
+
+"
