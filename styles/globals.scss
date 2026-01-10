@@ -58,7 +58,6 @@ ul {
 
 /* Style the code tags */
 pre {
-  overflow-x: scroll;
   border-radius: 10px;
   font-family: "Courier Prime", monospace;
   font-size: 16px;
@@ -66,7 +65,6 @@ pre {
   background-color: $code-background-color;
 }
 code {
-  overflow-x: scroll;
   font-family: "Courier Prime", monospace;
   font-size: $font-smaller;
   background-color: $code-snippet-bg-color;

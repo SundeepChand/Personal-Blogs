@@ -1,8 +1,8 @@
 title: "UUIDv7 vs UUIDv4 as primary keys"
 description: "Benchmarking MySQL DB with UUIDv4 vs UUIDv7 as primary keys"
-publishedAt: "2026-01-08T15:30:00.000Z"
-createdAt: "2026-01-08T15:30:00.000Z"
-updatedAt: "2026-01-08T15:30:00.000Z"
+publishedAt: "2026-01-10T15:30:00.000Z"
+createdAt: "2026-01-10T15:30:00.000Z"
+updatedAt: "2026-01-10T15:30:00.000Z"
 headerImageCaption: ""
 headerImageUrl: "../../images/blogs/uuidv7-vs-uuidv4/secondary-index-structure.svg"
 # headerImageUrl: "https://img.freepik.com/free-photo/3d-modern-technology-background-with-plexus-design_1048-16714.jpg"
@@ -15,7 +15,7 @@ tags:
 content: "
 ## Intro
 
-I recently came across the idea of UUIDv7 being more optimal as database keys as compared to UUIDv4. This idea has been out there on the internet since more than 2 years now. The development of UUIDv7 is based on the ideas of Shopify's ULID. While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random.
+I recently came across few blog posts around how UUIDv4s (Universally Unique Identifier) are suboptimal to be used as primary keys in relational databases. This idea has been out there on the internet since more than 2 years now. The development of UUIDv7 is based on the concepts of Shopify's ULID (Universally Unique Lexicographically Sortable Identifier). While both UUIDv4 & UUIDv7 are 128-bits long, UUIDv7 encodes a timestamp (with ms precision) in the most significant 48-bits. Hence, when generating IDs with UUIDv7, the IDs will be a monotonically increasing sequence. Whereas UUIDv4 is purely random. Refer to the images below for a high-level structure of these IDs:
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/uuidv4-structure.svg'
@@ -35,7 +35,7 @@ I recently came across the idea of UUIDv7 being more optimal as database keys as
 </figure>
 
 
-This blog post is a note of my learnings while digging deeper on the concept. In this blog post, I'll walk you through the advantages of using UUIDv7 over UUIDv4 as primary keys in MySQL database with certain benchmark numbers.
+In this blog post I briefly note down my learnings on database internals while trying to understand the subject. In the next few sections, I'll walk you through the internals of MySQL and how switching to UUIDv7 from UUIDv4 helps improve index performance with certain benchmark numbers.
 
 ## A quick primer on how MySQL stores data in disk
 
@@ -249,33 +249,30 @@ public class Main {\n
 </pre>
 
 
-### Benchmark results & conclusions
+### Benchmark results
 
 The output after running the program is as follows:
 
 
 <pre>
 <code class='plaintext'>
-# For 5,000,000 records with batch size 10,000\n
+# For 5,000,000 records with batch size 10,000,\n
+# UUIDv7 is ~87% faster than UUIDv4\n
 UUIDv4: 5,000,000 inserts in 217.83 s (22,954 inserts/s)\n
 UUIDv7: 5,000,000 inserts in 28.58 s (174,939 inserts/s)
 </code>
 </pre>
-
-
-UUIDv7 is ~87% faster than UUIDv4
+<br/>
 
 
 <pre>
 <code class='plaintext'>
-# For 5,000,000 records with batch size 1,000\n
+# For 5,000,000 records with batch size 1,000,\n
+# UUIDv7 is ~81% faster than UUIDv4\n
 UUIDv4: 5,000,000 inserts in 290.90 s (17,188 inserts/s)\n
 UUIDv7: 5,000,000 inserts in 55.84 s (89,538 inserts/s)
 </code>
 </pre>
-
-
-UUIDv7 is ~81% faster than UUIDv4
 
 
 This clearly shows that batch inserts of UUIDv7 is ~87% faster than UUIDv4s. As I tried to reduce the batch-size, the performance difference between the two, reduced slightly. This is because the IDs in a batch of UUIDv7 are sequential and thus lead to predictable order of insertions in the B+ Tree pages. It is also able to take better advantage of the cached pages, as the page that is being written would have already been cached by a previous write. Whereas in the case of UUIDv4, the IDs in a batch are completely random and thus leads to reading of multiple different pages & the cache usage isn't that optimal.
@@ -307,7 +304,7 @@ mysql&gt; EXPLAIN ANALYZE SELECT * FROM uuid_v7_bench ORDER BY id DESC LIMIT 100
 </pre>
 
 
-The random order of writes in case of UUIDv4 causes random page splits (& consequently a rebalancing of the node entries) thus contributing to somewhat more number of Disk I\/O operations per write. This also leads to the B+ Tree nodes in the indexes being filled non-uniformly as can be seen in the primary index size differences between the two (UUIDv7 index is ~11% bigger than UUIDv4). This is because with sequential writes the B+ Tree nodes aren't completely filled as the writes always happen in the rightmost node. Random writes with UUIDv4 on the other hand leads to a better packing of entries in the B+ Tree nodes:
+The random order of writes in case of UUIDv4 causes random page splits (& consequently a rebalancing of the node entries) thus contributing to somewhat more number of Disk I\/O operations per write. This also leads to the B+ Tree nodes in the indexes being filled non-uniformly as can be seen in the primary index size differences between the two (UUIDv4 index is ~36% bigger than UUIDv7). This is because with sequential writes the B+ Tree nodes are tightly packed as the writes always happen in the rightmost node. Random writes with UUIDv4 on the other hand leads to a sparse packing of entries in the B+ Tree nodes, which causes the data to be fragmented causing the index size to be larger:
 
 
 <pre>
@@ -318,8 +315,8 @@ mysql&gt; SELECT TABLE_NAME, ROUND(DATA_LENGTH / 1024 / 1024, 2)\n
 +---------------+-----------------------+\n
 | TABLE_NAME    | Primary_Index_Size_MB |\n
 +---------------+-----------------------+\n
-| uuid_v4_bench |                444.98 |\n
-| uuid_v7_bench |                496.00 |\n
+| uuid_v4_bench |                140.00 |\n
+| uuid_v7_bench |                 88.78 |\n
 +---------------+-----------------------+\n
 2 rows in set (0.033 sec)
 </code>
@@ -329,7 +326,7 @@ mysql&gt; SELECT TABLE_NAME, ROUND(DATA_LENGTH / 1024 / 1024, 2)\n
 ## Conclusion
 
 
-So based on the results above, I will say that, UUIDv7 has certain advantages over purely random UUIDv4, because of better page cache usage, with slight trade-off in index size. But like any other solution, if used at the right place it can give significant performance benefits. By supporting sequential generation of IDs & having randomness of UUIDs it offers a great trade-off for cases where range scans are frequent. It is a solid replacement for UUIDv4 in cases where the IDs don't have to be purely random (as the sequential IDs can often leak information regarding the time when entries are created). Like UUIDv4 it is also great replacement for Auto-Increment IDs which have their own challenges when used in Multi-Primary replicated clusters. All-in-all its a great middle ground between sequential Auto-Increment IDs & purely random UUIDs.
+So based on the results above, I will say that, UUIDv7 has certain advantages over purely random UUIDv4, because of better page cache usage, with the trade-off that sequential IDs may leak certain information about the dataset to unintended parties. But like any other solution, if used at the right place it can give significant performance benefits. By supporting sequential generation of IDs & having randomness of UUIDs it offers a great trade-off for cases where range scans are frequent. It is a solid replacement for UUIDv4 in cases where the IDs don't have to be purely random (due to privacy concerns, refer to this Reddit thread for more [info](https://www.reddit.com/r/programming/comments/1b24z57/why_uuid7_is_better_than_uuid4_as_clustered_index/)). Like UUIDv4 it is also great replacement for Auto-Increment IDs which have their own challenges when used in Multi-Primary replicated clusters. All-in-all its a great middle ground between sequential Auto-Increment IDs & purely random UUIDs.
 
 
 ## References
