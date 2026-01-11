@@ -55,10 +55,10 @@ MySQL's InnoDB storage engine stores the tables as B+ Trees in the disk, where t
 <br\/>
 <figure style='text-align: center;'>
   <img src='../../images/blogs/uuidv7-vs-uuidv4/btree-structure.svg'
-       alt='The B+ Tree structure for the given table'
+       alt='The B+ Tree structure for the given table. For this ex, each of the nodes contain only 2 records, but in real world scenario, each of the nodes will contain as many records as a single page can accommodate (i.e. page_size / record_size).'
        title='The B+ Tree structure for the given table'
        style='width: 100%;'>
-  <figcaption>The B+ Tree structure for the given table</figcaption>
+  <figcaption>The B+ Tree structure for the given table. For this ex, each of the nodes contain only 2 records, but in real world scenario, each of the nodes will contain as many records as a single page can accommodate (i.e. page_size / record_size).</figcaption>
 </figure>
 
 
