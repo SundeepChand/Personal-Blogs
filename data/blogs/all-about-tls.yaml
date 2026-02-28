@@ -1,0 +1,100 @@
+title: "Everything you need to know about TLS"
+description: "This post is a note about TLS handshakes and how they work"
+publishedAt: "2026-02-22T15:30:00.000Z"
+createdAt: "2026-02-22T15:30:00.000Z"
+updatedAt: "2026-02-22T15:30:00.000Z"
+headerImageCaption: ""
+headerImageUrl: ""
+headerImageAltText: "TLS"
+author: "Sundeep Chand"
+tags:
+  - "tls"
+  - "computer networks"
+  - "security"
+content: "
+# Introduction
+
+TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). While it can also be used to encrypt other communications such as email, messaging & voice over IP (VoIP).
+
+
+Following are the main objectives that TLS protocol accomplishes:
+1. **Encryption**: Hides data from third parties.
+2. **Authentication**: Ensures both parties are who they claim to be, typically using digital certificates.
+3. **Integrity**: Verifies that data has not been tampered with or forged during transit.
+
+
+Use of TLS is essential to enable encrypted communication between client & servers over the internet. Otherwise, the unencrypted data can easily be read by unintended third parties. You definately won't want your users' private information like chats, passwords & even credit card information to be read by any 3rd party. So for any modern day software application that communicates to remote servers over the internet, use of TLS is a must have. In the following sections we will explore how TLS works, a hands-on demo to setup TLS on a server, and mutual TLS, which is an extension of TLS.
+
+
+## How does TLS work?
+
+In any client server communication that uses TLS, the first step in establising a secure TLS communication channel is the TLS handshake. This handshake is done right after the TCP connection is established with the TCP handshake. The following diagram gives a high level overview of the steps involved in a TLS handshake.
+
+<figure style='text-align: center;'>
+  <img src='https://cf-assets.www.cloudflare.com/slt3lc6tev37/3wZIhjRIjfVSmCbVqkBKzb/4a7aa34324108c725dc25fc9e7c4ea4a/tls-ssl-handshake.png'
+       alt='TCP & TLS handshake flow (Source: cloudflare.com)'
+       title='TCP & TLS handshake flow (Source: cloudflare.com)'
+       style='width: 40%;'>
+  <figcaption>TCP & TLS handshake flow (Source: cloudflare.com)</figcaption>
+</figure>
+
+On a high level following are the steps in a TLS handshake:
+1. Client initiates the connection with the server by sharing the protocol version, list of cipher suites & its half of Diffie-Hellman secret ().
+2. Server receives client hello & it then shares it own half of Diffie-Hellman secret.
+3. Using the half parts of the secrets both the client & server can now compute the symmetric key using which all the encryption will take place.
+4. Server then sends its TLS Certificate which is digitally signed by a trusted Certificate Authority (CA).
+5. The server sends TLS handshake Finished to client after this.
+6. The client verifies the TLS Certificate with the certificate authority to ensure that the server is truly who it claims to be.
+7. After the certificate is verified, client sends TLS handshake finished.
+
+The above steps merely scratch the surface of TLS handshake process. Refer to the [blog post](https://www.cloudflare.com/en-gb/learning/ssl/what-happens-in-a-tls-handshake/) by Cloudflare to dig deeper into the topic.
+
+You can run the following command to see the steps involved in the TLS handshake:
+
+
+<pre>
+<code class=\"plaintext\">
+% curl -vI https://sundeep-blogs.vercel.app\n
+* Host sundeep-blogs.vercel.app:443 was resolved.\n
+* IPv6: (none)\n
+* IPv4: 216.198.79.131, 64.29.17.131\n
+*   Trying 216.198.79.131:443...\n
+* Connected to sundeep-blogs.vercel.app (216.198.79.131) port 443\n
+* ALPN: curl offers h2,http/1.1\n
+* (304) (OUT), TLS handshake, Client hello (1):\n
+*  CAfile: /etc/ssl/cert.pem\n
+*  CApath: none\n
+* (304) (IN), TLS handshake, Server hello (2):\n
+* (304) (IN), TLS handshake, Unknown (8):\n
+* (304) (IN), TLS handshake, Certificate (11):\n
+* (304) (IN), TLS handshake, CERT verify (15):\n
+* (304) (IN), TLS handshake, Finished (20):\n
+* (304) (OUT), TLS handshake, Finished (20):\n
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256 / [blank] / UNDEF\n
+* ALPN: server accepted h2\n
+* Server certificate:\n
+*  subject: CN=*.vercel.app\n
+*  start date: Feb 26 06:28:03 2026 GMT\n
+*  expire date: May 27 06:28:02 2026 GMT\n
+*  subjectAltName: host \"sundeep-blogs.vercel.app\" matched cert\'s \"*.vercel.app\"\n
+*  issuer: C=US; O=Google Trust Services; CN=WR1\n
+*  SSL certificate verify ok.\n
+* using HTTP/2\n
+* [HTTP/2] [1] OPENED stream for https://sundeep-blogs.vercel.app/\n
+* [HTTP/2] [1] [:method: HEAD]\n
+* [HTTP/2] [1] [:scheme: https]\n
+* [HTTP/2] [1] [:authority: sundeep-blogs.vercel.app]\n
+* [HTTP/2] [1] [:path: /]\n
+* [HTTP/2] [1] [user-agent: curl/8.7.1]\n
+* [HTTP/2] [1] [accept: */*]\n
+...\n
+...\n
+</code>
+</pre>
+
+<pre>
+<code class=\"plaintext\">
+openssl s_client -connect sundeep-blogs.vercel.app:443 -msg\n
+</code>
+</pre>
+"
