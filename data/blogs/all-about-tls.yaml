@@ -76,7 +76,7 @@ You can run the following command to see the steps involved in the TLS handshake
 *  subject: CN=*.vercel.app\n
 *  start date: Feb 26 06:28:03 2026 GMT\n
 *  expire date: May 27 06:28:02 2026 GMT\n
-*  subjectAltName: host \"sundeep-blogs.vercel.app\" matched cert\'s \"*.vercel.app\"\n
+*  subjectAltName: host \"sundeep-blogs.vercel.app\" matched cert's \"*.vercel.app\"\n
 *  issuer: C=US; O=Google Trust Services; CN=WR1\n
 *  SSL certificate verify ok.\n
 * using HTTP/2\n
