@@ -17,9 +17,12 @@ content: "
 TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). While it can also be used to encrypt other communications such as email, messaging & voice over IP (VoIP).
 
 
-Following are the main objectives that TLS protocol accomplishes:\n
+Following are the main objectives that TLS protocol accomplishes:
+
 1. **Encryption**: Hides data from third parties.
+
 2. **Authentication**: Ensures both parties are who they claim to be, typically using digital certificates.
+
 3. **Integrity**: Verifies that data has not been tampered with or forged during transit.
 
 
@@ -34,18 +37,27 @@ In any client server communication that uses TLS, the first step in establising 
   <img src='https://cf-assets.www.cloudflare.com/slt3lc6tev37/3wZIhjRIjfVSmCbVqkBKzb/4a7aa34324108c725dc25fc9e7c4ea4a/tls-ssl-handshake.png'
        alt='TCP & TLS handshake flow (Source: cloudflare.com)'
        title='TCP & TLS handshake flow (Source: cloudflare.com)'
-       style='width: 40%;'>
+       style='width: 60%;'>
   <figcaption>TCP & TLS handshake flow (Source: cloudflare.com)</figcaption>
 </figure>
 
-On a high level following are the steps in a TLS handshake:
+
+On a high level following are the steps involved in a TLS handshake:
+
 1. Client initiates the connection with the server by sharing the protocol version, list of cipher suites & its half of Diffie-Hellman secret ().
+
 2. Server receives client hello & it then shares it own half of Diffie-Hellman secret.
+
 3. Using the half parts of the secrets both the client & server can now compute the symmetric key using which all the encryption will take place.
+
 4. Server then sends its TLS Certificate which is digitally signed by a trusted Certificate Authority (CA).
+
 5. The server sends TLS handshake Finished to client after this.
+
 6. The client verifies the TLS Certificate with the certificate authority to ensure that the server is truly who it claims to be.
+
 7. After the certificate is verified, client sends TLS handshake finished.
+
 
 The above steps merely scratch the surface of TLS handshake process. Refer to the [blog post](https://www.cloudflare.com/en-gb/learning/ssl/what-happens-in-a-tls-handshake/) by Cloudflare to dig deeper into the topic.
 
@@ -53,8 +65,7 @@ You can run the following command to see the steps involved in the TLS handshake
 
 
 <pre>
-<code class=\"plaintext\">
-% curl -vI https://sundeep-blogs.vercel.app\n
+<code class=\"plaintext\">% curl -vI https://sundeep-blogs.vercel.app\n
 * Host sundeep-blogs.vercel.app:443 was resolved.\n
 * IPv6: (none)\n
 * IPv4: 216.198.79.131, 64.29.17.131\n
@@ -88,14 +99,11 @@ You can run the following command to see the steps involved in the TLS handshake
 * [HTTP/2] [1] [user-agent: curl/8.7.1]\n
 * [HTTP/2] [1] [accept: */*]\n
 ...\n
-...
-</code>
+...</code>
 </pre>
 
 <pre>
-<code class=\"plaintext\">
-openssl s_client -connect sundeep-blogs.vercel.app:443 -msg
-</code>
+<code class=\"plaintext\">openssl s_client -connect sundeep-blogs.vercel.app:443 -msg</code>
 </pre>
 
 
@@ -107,9 +115,7 @@ First of all we need to obtain a TLS certificate. For a production application t
 
 First you need to install mkcert using your package manager:
 <pre>
-<code class=\"plaintext\">
-brew install mkcert
-</code>
+<code class=\"plaintext\">brew install mkcert</code>
 </pre>
 
 
@@ -122,62 +128,65 @@ mkcert -install
 
 And, finally generate the certificates for localhost:
 <pre>
-<code class=\"plaintext\">
-mkcert localhost 127.0.0.1 ::1
-</code>
+<code class=\"plaintext\">mkcert localhost 127.0.0.1 ::1</code>
 </pre>
 
 This will generate two files i.e. `localhost+2.pem` (the certificate) & `localhost+2-key.pem` (the private key).
 
 Then we need to write our server by loading the .pem files generated in the previous step. I've written the code for a simple HTTPs server in golang below (feel free to use any other language of your choice):
 <pre>
-<code class=\"go\">
-package main
-
-import (
-    \"fmt\"
-    \"log\"
-    \"net/http\"
-)
-
-func main() {
-    http.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set(\"Content-Type\", \"text/plain; charset=UTF-8\")
-        w.WriteHeader(http.StatusOK)
-        fmt.Fprintf(w, \"Hello, World!\")
-    })
-
-    port := \":8080\"
-    log.Printf(\"Starting HTTPS server on https://localhost:%s\n\", port)
-
-    err := http.ListenAndServeTLS(port, \"localhost+2.pem\", \"localhost+2-key.pem\", nil)
-    if err != nil {
-        log.Fatalf(\"Failed to start HTTPS server: %v\", err)
-    }
+<code class=\"go\">package main\n
+\n
+import (\n
+&nbsp;&nbsp;\"fmt\"\n
+&nbsp;&nbsp;\"log\"\n
+&nbsp;&nbsp;\"net/http\"\n
+)\n
+\n
+func main() {\n
+&nbsp;&nbsp;http.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {\n
+&nbsp;&nbsp;&nbsp;&nbsp;w.Header().Set(\"Content-Type\", \"text/plain; charset=UTF-8\")\n
+&nbsp;&nbsp;&nbsp;&nbsp;w.WriteHeader(http.StatusOK)\n
+&nbsp;&nbsp;&nbsp;&nbsp;fmt.Fprintf(w, \"Hello, World!\")\n
+&nbsp;&nbsp;})\n
+\n
+&nbsp;&nbsp;port := \":8080\"\n
+&nbsp;&nbsp;log.Printf(\"Starting HTTPS server on https://localhost:%s\\n\", port)\n
+\n
+&nbsp;&nbsp;err := http.ListenAndServeTLS(port, \"localhost+2.pem\", \"localhost+2-key.pem\", nil)\n
+&nbsp;&nbsp;if err != nil {\n
+&nbsp;&nbsp;&nbsp;&nbsp;log.Fatalf(\"Failed to start HTTPS server: %v\", err)\n
+&nbsp;&nbsp;}\n
 }
 </code>
 </pre>
 
-Now if you navigate to https://localhost:8080 in your browser you should see the webpage as below. Notice the secure section:
+Run the program with the following command:
+<pre>
+<code class=\"plaintext\">go run main.go</code>
+</pre>
+
+Now the server is ready to handle HTTPS traffic. If you navigate to [https://localhost:8080](https://localhost:8080) in your browser you should see the webpage as below. Notice the secure section:
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/all-about-tls/browser.png'
        alt='Secure HTTP connection'
        title='Secure HTTP connection'
-       style='width: 40%;'>
+       style='width: 60%;'>
   <figcaption>Secure HTTP connection</figcaption>
 </figure>
 
 You can also inspect the TLS connection with the following commands:
 <pre>
-<code class=\"plaintext\">
-% curl -vI https://localhost:8080\n
-</code>
+<code class=\"plaintext\">% curl -vI https://localhost:8080\n</code>
 </pre>
 
 <pre>
-<code class=\"plaintext\">
-openssl s_client -connect localhost:8080 -msg
-</code>
+<code class=\"plaintext\">openssl s_client -connect localhost:8080 -msg</code>
 </pre>
+
+
+## TLS configuration in a multi-server setup.
+
+Now that we have explored how TLS can be setup in a single server, we are ready to explore how various ways TLS can be configured in a distributed cluster.
 "
