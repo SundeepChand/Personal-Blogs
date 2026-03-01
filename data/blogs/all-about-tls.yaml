@@ -12,12 +12,12 @@ tags:
   - "computer networks"
   - "security"
 content: "
-# Introduction
+## Introduction
 
 TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). While it can also be used to encrypt other communications such as email, messaging & voice over IP (VoIP).
 
 
-Following are the main objectives that TLS protocol accomplishes:
+Following are the main objectives that TLS protocol accomplishes:\n
 1. **Encryption**: Hides data from third parties.
 2. **Authentication**: Ensures both parties are who they claim to be, typically using digital certificates.
 3. **Integrity**: Verifies that data has not been tampered with or forged during transit.
@@ -88,13 +88,96 @@ You can run the following command to see the steps involved in the TLS handshake
 * [HTTP/2] [1] [user-agent: curl/8.7.1]\n
 * [HTTP/2] [1] [accept: */*]\n
 ...\n
-...\n
+...
 </code>
 </pre>
 
 <pre>
 <code class=\"plaintext\">
-openssl s_client -connect sundeep-blogs.vercel.app:443 -msg\n
+openssl s_client -connect sundeep-blogs.vercel.app:443 -msg
+</code>
+</pre>
+
+
+### SSL certificate validation
+
+## Enabling TLS in a HTTP server
+
+First of all we need to obtain a TLS certificate. For a production application the certificate is issued by some reputable, **broswer-trusted** Certificate Authorities (CAs) like Let's Encrypt, AWS, DigiCert, etc. But for our local testing we will use `mkcert` to generate a certificate. `mkcert` takes care of creating a 'Local Certificate Authority' on the machine & installs it into the system's truststore, which means the browser & tools like curl will recognize the certificate & won't give TLS validation errors.
+
+First you need to install mkcert using your package manager:
+<pre>
+<code class=\"plaintext\">
+brew install mkcert
+</code>
+</pre>
+
+
+Then setup the local CA:
+<pre>
+<code class=\"plaintext\">
+mkcert -install
+</code>
+</pre>
+
+And, finally generate the certificates for localhost:
+<pre>
+<code class=\"plaintext\">
+mkcert localhost 127.0.0.1 ::1
+</code>
+</pre>
+
+This will generate two files i.e. `localhost+2.pem` (the certificate) & `localhost+2-key.pem` (the private key).
+
+Then we need to write our server by loading the .pem files generated in the previous step. I've written the code for a simple HTTPs server in golang below (feel free to use any other language of your choice):
+<pre>
+<code class=\"go\">
+package main
+
+import (
+    \"fmt\"
+    \"log\"
+    \"net/http\"
+)
+
+func main() {
+    http.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set(\"Content-Type\", \"text/plain; charset=UTF-8\")
+        w.WriteHeader(http.StatusOK)
+        fmt.Fprintf(w, \"Hello, World!\")
+    })
+
+    port := \":8080\"
+    log.Printf(\"Starting HTTPS server on https://localhost:%s\n\", port)
+
+    err := http.ListenAndServeTLS(port, \"localhost+2.pem\", \"localhost+2-key.pem\", nil)
+    if err != nil {
+        log.Fatalf(\"Failed to start HTTPS server: %v\", err)
+    }
+}
+</code>
+</pre>
+
+Now if you navigate to https://localhost:8080 in your browser you should see the webpage as below. Notice the secure section:
+
+<figure style='text-align: center;'>
+  <img src='../../images/blogs/all-about-tls/browser.png'
+       alt='Secure HTTP connection'
+       title='Secure HTTP connection'
+       style='width: 40%;'>
+  <figcaption>Secure HTTP connection</figcaption>
+</figure>
+
+You can also inspect the TLS connection with the following commands:
+<pre>
+<code class=\"plaintext\">
+% curl -vI https://localhost:8080\n
+</code>
+</pre>
+
+<pre>
+<code class=\"plaintext\">
+openssl s_client -connect localhost:8080 -msg
 </code>
 </pre>
 "
