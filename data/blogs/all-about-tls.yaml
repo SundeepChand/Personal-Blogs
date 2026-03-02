@@ -4,7 +4,7 @@ publishedAt: "2026-02-22T15:30:00.000Z"
 createdAt: "2026-02-22T15:30:00.000Z"
 updatedAt: "2026-02-22T15:30:00.000Z"
 headerImageCaption: ""
-headerImageUrl: "https://sundeep-blogs.vercel.app/images/blogs/all-about-tls/header-image.jpg"
+headerImageUrl: "/images/blogs/all-about-tls/header-image.jpg"
 headerImageAltText: "TLS"
 author: "Sundeep Chand"
 tags:
@@ -44,7 +44,7 @@ In any client server communication that uses TLS, the first step in establising 
 
 On a high level following are the steps involved in a TLS handshake:
 
-1. Client initiates the connection with the server by sharing the protocol version, list of cipher suites & its half of Diffie-Hellman secret ().
+1. Client initiates the connection with the server by sharing the protocol version, list of cipher suites & its half of Diffie-Hellman secret.
 
 2. Server receives client hello & it then shares it own half of Diffie-Hellman secret.
 
@@ -194,10 +194,10 @@ Now the server is ready to handle HTTPS traffic. If you navigate to [https://loc
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/all-about-tls/browser.png'
-       alt='Secure HTTP connection'
-       title='Secure HTTP connection'
+       alt='Browser shows the connection as secure when the TLS certificate is verified'
+       title='Browser shows the connection as secure when the TLS certificate is verified'
        style='width: 60%;'>
-  <figcaption>Secure HTTP connection</figcaption>
+  <figcaption>Browser shows the connection as secure when the TLS certificate is verified</figcaption>
 </figure>
 
 You can also inspect the TLS connection with the following commands:
@@ -212,7 +212,7 @@ You can also inspect the TLS connection with the following commands:
 
 ## TLS configuration in a multi-server setup
 
-Now that we have explored how TLS can be setup in a single server, we are ready to explore the various ways TLS can be configured in a distributed cluster. In general whenever using TLS with your application server, the application usually sits behind a reverse proxy like Nginx. In such cases, we have the following options regarding how the TLS connection between the client & the proxy is forwarded to the application server. This process is known as **TLS termination**:
+Now that we have explored how TLS can be setup in a single server, we are ready to explore the various ways TLS can be configured in a distributed cluster. In any kind of internet facing application, the application usually sits behind a reverse proxy like Nginx, through which it receives all the traffic. In such cases, we have the following options regarding how the TLS connection between the client & the proxy is forwarded to the application server. This process is known as **TLS termination**:
 
 1. **TLS Passthrough:** In this case, the proxy does not decrypt the TLS encrypted packets and directly forwards the raw TCP packets to the upstream application server. The upstream server is responsible for managing the TLS certificates and takes care of decrypting the data from the client. The proxy does not see the data at all. This offers the maximum data privacy but the proxy cannot be used to any perform operation (for eg. caching) on the data.
 
@@ -227,7 +227,35 @@ Now that we have explored how TLS can be setup in a single server, we are ready 
        style='width: 60%;'>
   <figcaption>TLS termination methods</figcaption>
 </figure>
+<p></p>
 
 
-## Client side TLS with mutual TLS
+## Client side TLS with mutual TLS (mTLS)
+
+In mTLS, both the client & server have a TLS certificate which is verified by both the parties. The additional step here is that after the client verifies the server's certificate it presents its TLS certificate to the server. The server then verifies the client's certificate and grants access only if the certificate is valid.
+
+<figure style='text-align: center;'>
+  <img src='https://www.cloudflare.com/resources/images/slt3lc6tev37/5SjaQfZzDLEGqyzFkA0AA4/d227a26bbd7bc6d24363e9b9aaabef55/how_mtls_works-what_is_mutual_tls.png'
+       alt='Mutual TLS between client & server'
+       title='Mutual TLS between client & server'
+       style='width: 60%;'>
+  <figcaption>Mutual TLS between client & server (Source cloudflare.com)</figcaption>
+</figure>
+
+Unlike TLS, in the case of mTLS, the organization implementing it acts as its own CA. The root certificate in this case is also self-signed by the organization. This is because mTLS is usually implemented for service communication between enterprises and also verify connections with client devices that don't follow a login process (e.g IoT) devices. This provided an additional layer of security by ensuring that traffic is secure and trusted in both directions. For more detailed explanation of mTLS you may refer to the [blog post](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) by Cloudflare.
+
+
+I won't be putting the code to implement mTLS in this post, to keep it short, but its very similar to normal TLS, with the exception that on the client side too a certificate needs to be configured & a quick LLM prompt should give the results.
+
+
+## Conclusion
+
+TLS is one of the most widely used piece of modern technology and is often overlooked by a lot of application developers. The topics we covered in the above sections barely scratch the surface of TLS & related technologies and can easily expand into individual blog posts for each of them. It was a long post & thanks for bearing with me this long. I hope you learnt something new today!
+
+
+## References
+
+- [What happens in a TLS Handshake](https://www.cloudflare.com/en-gb/learning/ssl/what-happens-in-a-tls-handshake/)\n
+- [SSL Verification](https://www.digitalocean.com/community/tutorials/ssl-verification)\n
+- [What is mutual TLS](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/)\n
 "
