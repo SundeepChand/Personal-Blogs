@@ -147,6 +147,15 @@ figcaption {
   position: absolute;
 }
 
+ol {
+  padding: 5px;
+  margin-left: 5px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
 @-webkit-keyframes nprogress-spinner {
   0% {
     -webkit-transform: rotate(0deg);
