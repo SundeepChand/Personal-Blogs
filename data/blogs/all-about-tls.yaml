@@ -1,11 +1,11 @@
-title: "Everything you need to know about TLS"
+title: "All you need to know about TLS"
 description: "This post is a note about TLS handshakes and how they work"
 publishedAt: "2026-02-22T15:30:00.000Z"
 createdAt: "2026-02-22T15:30:00.000Z"
 updatedAt: "2026-02-22T15:30:00.000Z"
 headerImageCaption: ""
-headerImageUrl: "/images/blogs/all-about-tls/header-image.jpg"
-headerImageAltText: "TLS"
+headerImageUrl: "https://sundeep-blogs.vercel.app/images/blogs/all-about-tls/header-image.jpg"
+headerImageAltText: "An image of a laptop"
 author: "Sundeep Chand"
 tags:
   - "tls"
@@ -14,24 +14,24 @@ tags:
 content: "
 ## Introduction
 
-TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. It is often used interchangeably with SSL (Secure Sockets Layer) which was used prior to TLS. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). While it can also be used to encrypt other communications such as email, messaging & voice over IP (VoIP).
+TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. It is often used interchangeably with SSL (Secure Sockets Layer) which was used prior to TLS. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). It can also be used to encrypt other communications such as email, messaging, voice over IP (VoIP).
 
 
 Following are the main objectives that TLS protocol accomplishes:
 
 1. **Encryption**: Hides data from third parties.
 
-2. **Authentication**: Ensures both parties are who they claim to be, typically using digital certificates.
+2. **Authentication**: Ensures both parties are who they claim to be using digital certificates.
 
 3. **Integrity**: Verifies that data has not been tampered with or forged during transit.
 
 
-Use of TLS is essential to enable encrypted communication between client & servers over the internet. Otherwise, the unencrypted data can easily be read by unintended third parties. You definately won't want your users' private information like chats, passwords & even credit card information to be read by any 3rd party. So for any modern day software application that communicates to remote servers over the internet, use of TLS is a must. In the following sections we will explore how TLS works, a hands-on demo to setup TLS on a server, TLS setup with proxy server and mutual TLS, which is an extension of TLS.
+Use of TLS is essential to enable encrypted communication between client & servers over the internet. Otherwise, the unencrypted data can easily be read by unintended third parties who intercept the data in transit. You definately won't want your users' private information like chats, passwords & even credit card information to be read by any 3rd party. So for any modern day software application that communicates to remote servers over the internet, use of TLS is a must. In the following sections we will explore how TLS works, a hands-on demo to setup TLS on a server, TLS setup with proxy server and mutual TLS, which is an extension of TLS.
 
 
 ## How does TLS work?
 
-In any client server communication that uses TLS, the first step in establising a secure TLS communication channel is the TLS handshake. This handshake is done right after the TCP connection is established with the TCP handshake. The following diagram gives a high level overview of the steps involved in a TLS handshake.
+In any client-server communication that uses TLS, the first step in establising a secure TLS communication channel is the TLS handshake. This handshake is done right after the TCP connection is established with the TCP handshake. The following diagram gives a high level overview of the steps involved in a TLS handshake.
 
 <figure style='text-align: center;'>
   <img src='https://cf-assets.www.cloudflare.com/slt3lc6tev37/3wZIhjRIjfVSmCbVqkBKzb/4a7aa34324108c725dc25fc9e7c4ea4a/tls-ssl-handshake.png'
@@ -42,13 +42,13 @@ In any client server communication that uses TLS, the first step in establising 
 </figure>
 
 
-On a high level following are the steps involved in a TLS handshake:
+From a bird's eye-view, following are the steps involved in a TLS handshake:
 
 1. Client initiates the connection with the server by sharing the protocol version, list of cipher suites & its half of Diffie-Hellman secret.
 
 2. Server receives client hello & it then shares it own half of Diffie-Hellman secret.
 
-3. Using the half parts of the secrets both the client & server can now compute the symmetric key using which all the encryption will take place.
+3. Using the half parts of the secrets both the client & server can now compute the symmetric key using which all the data encryption will take place.
 
 4. Server then sends its TLS Certificate which is digitally signed by a trusted Certificate Authority (CA).
 
@@ -59,7 +59,7 @@ On a high level following are the steps involved in a TLS handshake:
 7. After the certificate is verified, client sends TLS handshake finished.
 
 
-Try running the following command in your CLI to inspect the steps involved in the TLS handshake:
+You can try running the following `curl` & `openssl` commands in your CLI to inspect the steps involved in the TLS handshake:
 
 
 <pre>
@@ -110,27 +110,28 @@ The above steps merely scratch the surface of TLS handshake process. Refer to th
 
 ### SSL certificate verification
 
-This is one of the most crucial steps in TLS connection establishment. It helps in preventing man-in-the-middle attacks by verifying that the server, the client is communicating with, is a legitimate one & not an imposter. During the TLS handshake process, once the sever sends the SSL certificate, it starts the verification. As part of this, the client primarily performs the following steps:
+This is one of the most crucial steps in TLS connection establishment. It helps in preventing man-in-the-middle attacks by verifying that the server, the client is communicating with, is a legitimate one & not an imposter. During the TLS handshake process, once the sever sends the SSL certificate, client starts the verification. As part of this, the client primarily performs the following steps:
 
 1. **Certificate Authority (CA) validation:** The client first checks whether this certificate was issued by a trusted Certificate Authority (CA). Trusted CAs are organizations that have been vetted and are included in the trust stores of operating systems and browsers. If the certificate is not signed by a CA in the client's trust store, the connection will be flagged as insecure, and users may see warnings or errors. This validation step helps prevent attackers from using self-signed or fraudulent certificates to impersonate legitimate sites.
 
 2. **Domain validation:** The client ensures that the SSL certificate presented by the server matches the domain name it is trying to access. This is typically checked against the certificate's Common Name (CN) and Subject Alternative Name (SAN) fields.
 
-3. **Certificate Chain Validation:** The TLS certificate is technically a digital signature which is issued by an intermediate CA for the server's domain name (www.example.com). The intermediate CA needs to sign the certificate using its private key, which is then verified by the client using the CA's public key. But if the intermediate CA's private key is compromised, then any untrusted 3rd party will be able to issue certificates to any malicious websites. To protect against this, an intermediate CA's certificate is issued by a Root CA. Root certificates are self-signed and are included in the trust stores of operating systems, browsers, and devices. Trust in the root CA is what ultimately allows the client to trust the entire chain of certificates. (Note there can be multiple intermediate CAs leading upto the root).
+3. **Certificate Chain Validation:** The TLS certificate is technically a digital signature which is issued by an intermediate CA for the server's domain name (www.example.com). The intermediate CA needs to sign the certificate using its private key, which is then verified by the client using the CA's public key. But if the intermediate CA's private key is compromised, then an untrusted 3rd party will be able to issue certificates to any malicious websites. To protect against this, an intermediate CA's certificate is issued by a Root CA. Root certificates are self-signed and are included in the trust stores of operating systems, browsers, and devices. Note there can be multiple intermediate CAs leading upto the root. The root CAs mostly stay offline to reduce the surface area of attacks to breach the private key, while the intermediate CA's take care of issuing certificates to end applications. In case any breach in intermediate CA, the root CA can immediately revoke the intermediate certificate, rendering every subordinate end-entity certificate invalid.
 
 <figure style='text-align: center;'>
   <img src='https://doimages.nyc3.cdn.digitaloceanspaces.com/006Community/SSL-verification-tutorial/certificate-chain-2.png'
-       alt='Certificate chain in SSL verification'
-       title='Certificate chain in SSL verification (Source: digitalocean.com)'
+       alt='Certificate chain in TLS verification'
+       title='Certificate chain in TLS verification (Source: digitalocean.com)'
        style='width: 60%;'>
-  <figcaption>Certificate chain in SSL verification (Source: digitalocean.com)</figcaption>
+  <figcaption>Certificate chain in TLS verification (Source: digitalocean.com)</figcaption>
 </figure>
 
 
 4. **Expiration Check:** Every SSL certificate has a validity period, defined by its “Not Before” and “Not After” dates. The client checks that the current date falls within this range. If the certificate is expired or not yet valid, the client will refuse the connection.
 
 
-The TLS connection is successfully established only if all the above steps are validated successfully. Otherwise the connection is refused. In this section we barely scratched the surface of TLS verification process. Refer to this [blog post](https://www.digitalocean.com/community/tutorials/ssl-verification) by DigitalOcean for a more detailed information on TLS.
+The TLS connection is successfully established only if all the above steps are validated successfully. Otherwise the connection is refused. The above section only outlines the steps involved in TLS verification from a high-level. Refer to this [blog post](https://www.digitalocean.com/community/tutorials/ssl-verification) by DigitalOcean for a more detailed information on certificate verification.
+
 
 
 ## Enabling TLS in a HTTP server
@@ -210,15 +211,15 @@ You can also inspect the TLS connection with the following commands:
 </pre>
 
 
-## TLS configuration in a multi-server setup
+## TLS configuration in multi-server setups
 
 Now that we have explored how TLS can be setup in a single server, we are ready to explore the various ways TLS can be configured in a distributed cluster. In any kind of internet facing application, the application usually sits behind a reverse proxy like Nginx, through which it receives all the traffic. In such cases, we have the following options regarding how the TLS connection between the client & the proxy is forwarded to the application server. This process is known as **TLS termination**:
 
-1. **TLS Passthrough:** In this case, the proxy does not decrypt the TLS encrypted packets and directly forwards the raw TCP packets to the upstream application server. The upstream server is responsible for managing the TLS certificates and takes care of decrypting the data from the client. The proxy does not see the data at all. This offers the maximum data privacy but the proxy cannot be used to any perform operation (for eg. caching) on the data.
+1. **TLS Passthrough:** In this case, the proxy does not decrypt the TLS encrypted packets and directly forwards the raw TCP packets to the upstream application server. The upstream server is responsible for managing the TLS certificates and takes care of decrypting the data from the client. The proxy does not see the data at all. This offers the maximum data privacy but the proxy cannot be used to any perform operation (for eg. caching, logging, etc) on the data.
 
 2. **TLS Re-encryption:** In this case, the proxy receives the client data, decrypts it & forwards it to the application server using a different TLS connection which exists between the proxy and the application. TLS needs to be configured in both proxy & the application in this case. This is preferred in high security environments where some operation like traffic packet inspection or logging needs to be performed by the proxy.
 
-3. **TLS Termination:** In this case, the proxy terminates the TLS connection and sends the data unencrypted to the upstream application server. TLS is only configured at the proxy while the application server receives plain HTTP traffic. This is useful in private cloud environments like AWS VPC etc where the traffic flows through an internal network once received by the gateway. By not having to maintain TLS certificates between all the servers, the overhead of maintaining multiple certificates is reduced & the computation overhead for encrypting packets at every hop is removed.
+3. **TLS Termination:** In this case, the proxy terminates the TLS connection and sends the data unencrypted to the upstream application server. TLS is only configured at the proxy while the application server receives plain HTTP traffic. This is useful in private cloud environments like AWS VPC, etc where the traffic flows through an internal network once received by the gateway. By not having to maintain TLS certificates between all the servers, the overhead of maintaining multiple certificates is reduced & the computation overhead for encrypting packets at every hop is removed.
 
 <figure style='text-align: center;'>
   <img src='../../images/blogs/all-about-tls/tls-termination.svg'
@@ -242,7 +243,7 @@ In mTLS, both the client & server have a TLS certificate which is verified by bo
   <figcaption>Mutual TLS between client & server (Source cloudflare.com)</figcaption>
 </figure>
 
-Unlike TLS, in the case of mTLS, the organization implementing it acts as its own CA. The root certificate in this case is also self-signed by the organization. This is because mTLS is usually implemented for service communication between enterprises and also verify connections with client devices that don't follow a login process (e.g IoT) devices. This provided an additional layer of security by ensuring that traffic is secure and trusted in both directions. For more detailed explanation of mTLS you may refer to the [blog post](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) by Cloudflare.
+Unlike TLS, in the case of mTLS, the organization implementing it acts as its own CA. The root certificate in this case is also self-signed by the organization. This is because mTLS is usually implemented for service communication between enterprises and also to verify connections with client devices that don't follow a login process (e.g IoT devices). This provides an additional layer of security by ensuring that traffic is secure and trusted in both directions. For more detailed explanation of mTLS you may refer to the [blog post](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) by Cloudflare.
 
 
 I won't be putting the code to implement mTLS in this post, to keep it short, but its very similar to normal TLS, with the exception that on the client side too a certificate needs to be configured & a quick LLM prompt should give the results.
