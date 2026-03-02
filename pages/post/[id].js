@@ -111,7 +111,6 @@ export async function getStaticProps({ params }) {
   // Fetch the individual blog post.
   const post = await getPostById(params.id);
   post.content = await markdownToHtml(post.content);
-  console.log(post.content);
   return {
     props: {
       post: post,

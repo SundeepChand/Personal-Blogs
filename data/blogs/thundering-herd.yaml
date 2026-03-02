@@ -1,0 +1,16 @@
+title: "Thundering Herd Problem and its mitigations"
+description: "In this post we explore the thundering herd problem in caching and some of its fixes"
+publishedAt: "2026-02-22T15:30:00.000Z"
+createdAt: "2026-02-22T15:30:00.000Z"
+updatedAt: "2026-02-22T15:30:00.000Z"
+headerImageCaption: ""
+headerImageUrl: "https://sundeep-blogs.vercel.app/images/blogs/uuidv7-vs-uuidv4/secondary-index-structure.svg"
+headerImageAltText: "Thundering herd problem"
+author: "Sundeep Chand"
+tags:
+  - "caching"
+  - "concurrency"
+  - "distributed-systems"
+content: "
+# Introduction
+"

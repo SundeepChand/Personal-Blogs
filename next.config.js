@@ -18,6 +18,10 @@ module.exports = {
         protocol: "https",
         hostname: "img.freepik.com",
       },
+      {
+        protocol: "https",
+        hostname: "cf-assets.www.cloudflare.com",
+      }
     ],
   },
 
