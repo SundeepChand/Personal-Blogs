@@ -21,6 +21,10 @@ module.exports = {
       {
         protocol: "https",
         hostname: "cf-assets.www.cloudflare.com",
+      },
+      {
+        protocol: "https",
+        hostname: "sundeep-blogs.vercel.app"
       }
     ],
   },
