@@ -243,7 +243,8 @@ In mTLS, both the client & server have a TLS certificate which is verified by bo
   <figcaption>Mutual TLS between client & server (Source cloudflare.com)</figcaption>
 </figure>
 
-Unlike TLS, in the case of mTLS, the organization implementing it acts as its own CA. The root certificate in this case is also self-signed by the organization. This is because mTLS is usually implemented for service communication between enterprises and also to verify connections with client devices that don't follow a login process (e.g IoT devices). This provides an additional layer of security by ensuring that traffic is secure and trusted in both directions. For more detailed explanation of mTLS you may refer to the [blog post](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) by Cloudflare.
+
+Unlike TLS, in the case of mTLS, the organization implementing it acts as its own CA. The root certificate in this case is also self-signed by the organization. This is because mTLS is usually implemented for service communication between enterprises and also to verify connections with client devices that don't follow a login process (e.g IoT devices). This provides an additional layer of security by ensuring that traffic is secure and trusted in both directions. For more detailed explanation of mTLS you may refer to [this blog post](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) by Cloudflare.
 
 
 I won't be putting the code to implement mTLS in this post, to keep it short, but its very similar to normal TLS, with the exception that on the client side too a certificate needs to be configured & a quick LLM prompt should give the results.
