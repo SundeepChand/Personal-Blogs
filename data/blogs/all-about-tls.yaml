@@ -105,7 +105,7 @@ You can try running the following `curl` & `openssl` commands in your CLI to ins
 </pre>
 
 
-The above steps merely scratch the surface of TLS handshake process. Refer to the [blog post](https://www.cloudflare.com/en-gb/learning/ssl/what-happens-in-a-tls-handshake/) by Cloudflare to dig deeper into the topic.
+The above steps merely scratch the surface of TLS handshake process. Refer to the [blog post](https://www.cloudflare.com/en-gb/learning/ssl/what-happens-in-a-tls-handshake/) by Cloudflare to dig deeper into the topic. I also highly recommend you to go through [this blog post](https://medium.com/blockchain-bites-es/how-two-strangers-can-share-a-secret-in-public-4a21651d9881) by Lee Marreros to get an understanding of Diffie-Hellman Key Exchange algorithm. 
 
 
 ### SSL certificate verification
@@ -257,6 +257,7 @@ TLS is one of the most widely used piece of modern technology and is often overl
 ## References
 
 - [What happens in a TLS Handshake](https://www.cloudflare.com/en-gb/learning/ssl/what-happens-in-a-tls-handshake/)\n
+- [How Two Strangers Can Share a Secret in Public](https://medium.com/blockchain-bites-es/how-two-strangers-can-share-a-secret-in-public-4a21651d9881)\n
 - [SSL Verification](https://www.digitalocean.com/community/tutorials/ssl-verification)\n
 - [What is mutual TLS](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/)\n
 "
