@@ -1,8 +1,8 @@
 title: "All you need to know about TLS"
 description: "This post is a note about the various applications of TLS & how they work"
-publishedAt: "2026-03-03T00:30:00.000Z"
-createdAt: "2026-03-03T00:30:00.000Z"
-updatedAt: "2026-03-03T00:30:00.000Z"
+publishedAt: "2026-03-06T00:30:00.000Z"
+createdAt: "2026-03-06T00:30:00.000Z"
+updatedAt: "2026-03-06T00:30:00.000Z"
 headerImageCaption: ""
 headerImageUrl: "https://sundeep-blogs.vercel.app/images/blogs/all-about-tls/header-image.jpg"
 headerImageAltText: "An image of a laptop"
@@ -14,7 +14,7 @@ tags:
 content: "
 ## Introduction
 
-TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. It is often used interchangeably with SSL (Secure Sockets Layer) which was used prior to TLS. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). It can also be used to encrypt other communications such as email, messaging, voice over IP (VoIP).
+TLS stands for Transport Layer Security, which is a security protocol designed to allow for secure communication between two parties (machines) over the internet. The term TLS is often used interchangeably with SSL (Secure Sockets Layer) which was used prior to TLS. One of the primary use cases of TLS is to encrypt the communication between a web application & servers over the internet with HTTPS (which denotes HTTP connection implemented over TLS). It can also be used to encrypt other communications such as email, messaging, voice over IP (VoIP).
 
 
 Following are the main objectives that TLS protocol accomplishes:
