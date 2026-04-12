@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@svgr/webpack": "^8.1.0",
-    "axios": "^1.13.2",
+    "axios": "^1.15.0",
     "date-fns": "^4.1.0",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
