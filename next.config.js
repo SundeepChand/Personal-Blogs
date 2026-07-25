@@ -25,6 +25,10 @@ module.exports = {
       {
         protocol: "https",
         hostname: "sundeep-blogs.vercel.app"
+      },
+      {
+        protocol: "https",
+        hostname: "lh4.googleusercontent.com"
       }
     ],
   },
